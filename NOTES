@@ -1,0 +1,19 @@
+Framework
+- Object Mapping
+- Partioning/replication strategies
+
+Load Testing
+- Patrick Lightbody's tool?
+
+Deployment
+- Capistrano
+- SmartFrog
+- CloudTools 
+- Puppet
+
+//base[child/@foo2]
+DescendantSelfAxisQuery(+ChildAxisQuery(_:PARENT:, {}testroot), +ParentAxisQuery(+_:PROPERTIES_SET:1:foo2 +name() = {}child, null) +name() = {}base, 1)
+
+//child[../@foo1]
+DescendantSelfAxisQuery(+ChildAxisQuery(_:PARENT:, {}testroot), +ParentAxisQuery(+_:PROPERTIES_SET:1:foo2), null) +name() = {}base, 1)
+
