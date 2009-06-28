@@ -23,11 +23,12 @@ public class AbstractMapStore {
         return tweetMap;
     }
     
-    protected Tweet toTweet(Map<String, String> tweetMap) {
+    protected Tweet toTweet(Map<String, String> tweetMap, String id) {
         Tweet tweet = new Tweet();
         tweet.setDate(new Date(Long.valueOf(tweetMap.get(DATE))));
         tweet.setText(tweetMap.get(TEXT));
         tweet.setUser(tweetMap.get(USER));
+        tweet.setId(id);
         return tweet;
     }
 }

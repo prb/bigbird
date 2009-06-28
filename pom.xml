@@ -8,10 +8,10 @@
   
   <properties>
     <hadoop.version>0.18.1</hadoop.version>
-    <voldemort.version>0.4a</voldemort.version>
-    <jcouchdb.version>0.7.2</jcouchdb.version>
+    <voldemort.version>SNAPSHOT</voldemort.version>
+    <jcouchdb.version>0.9.0-2</jcouchdb.version>
     <couchdb4j.version>0.1.2</couchdb4j.version>
-    <svenson.version>1.2.6</svenson.version>
+    <svenson.version>1.3.0</svenson.version>
   </properties>
   
   <modules>

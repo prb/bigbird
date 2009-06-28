@@ -15,7 +15,7 @@ public interface TweetService {
      * @return
      * @throws UserNotFoundException
      */
-    List<Tweet> getFollowingTweets(String user, int start, int count) throws UserNotFoundException;
+    List<Tweet> getFriendsTimeline(String user, int start, int count) throws UserNotFoundException;
 
     List<Tweet> search(String text, int start, int count);
  

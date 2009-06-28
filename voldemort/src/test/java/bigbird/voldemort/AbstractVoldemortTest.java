@@ -1,4 +1,4 @@
-package com.envoisolutions.tatter.voldemort;
+package bigbird.voldemort;
 
 import org.junit.After;
 import org.junit.Assert;

@@ -48,11 +48,11 @@ public class CouchDbTweetService extends AbstractMapStore implements TweetServic
     public Tweet getTweet(String id) throws NotFoundException {
         Map<String, String> doc = db.getDocument(Map.class, id);
         
-        return toTweet(doc);
+        return toTweet(doc, xxx);
     }
 
     public List<Tweet> getTweets(String user, int start, int count) throws UserNotFoundException {
-        Options opts = new Options().count(count).descending(true).key(user).skip(start);
+        Options opts = new Options().limit(count).descending(true).key(user).skip(start);
         
         ViewResult<Map> result = db.queryView("tweets/by_user", 
                                               Map.class, 
@@ -61,7 +61,7 @@ public class CouchDbTweetService extends AbstractMapStore implements TweetServic
         
         List<Tweet> tweets = new ArrayList<Tweet>();
         for (ValueRow<Map> row : result.getRows()) {
-            tweets.add(toTweet(row.getValue()));
+            tweets.add(toTweet(row.getValue(), xxx));
         }
         
         return tweets;
@@ -76,7 +76,7 @@ public class CouchDbTweetService extends AbstractMapStore implements TweetServic
         
     }
 
-    public List<Tweet> getFollowingTweets(String user, int start, int count) throws UserNotFoundException {
+    public List<Tweet> getFriendsTimeline(String user, int start, int count) throws UserNotFoundException {
         // TODO Auto-generated method stub
         return null;
     }

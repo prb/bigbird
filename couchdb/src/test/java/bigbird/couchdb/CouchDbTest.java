@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.svenson.JSONParser;
 
-public class TatterTest extends Assert {
+public class CouchDbTest extends Assert {
     
     private Database db;
     
@@ -52,7 +52,7 @@ public class TatterTest extends Assert {
    
     @Before
     public void setupDatabase() {
-        db = new Database("localhost", 5984, "tweets");
+        db = new Database("localhost", 5984, "bigbird");
     }
     
     @After

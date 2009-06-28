@@ -1,5 +1,6 @@
 package bigbird.couchdb;
 
+import bigbird.User;
 import bigbird.UserService;
 
 import java.util.HashMap;
@@ -30,6 +31,10 @@ public class CouchDbUserService implements UserService {
         }
     }
     
+    public void newUser(User user, String password) {
+        
+    }
+
     public void setDatabase(Database db) {
         this.db = db;
     }
