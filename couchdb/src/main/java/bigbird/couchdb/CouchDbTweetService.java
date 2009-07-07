@@ -48,7 +48,7 @@ public class CouchDbTweetService extends AbstractMapStore implements TweetServic
     public Tweet getTweet(String id) throws NotFoundException {
         Map<String, String> doc = db.getDocument(Map.class, id);
         
-        return toTweet(doc, xxx);
+        return toTweet(doc, id);
     }
 
     public List<Tweet> getTweets(String user, int start, int count) throws UserNotFoundException {
@@ -61,7 +61,7 @@ public class CouchDbTweetService extends AbstractMapStore implements TweetServic
         
         List<Tweet> tweets = new ArrayList<Tweet>();
         for (ValueRow<Map> row : result.getRows()) {
-            tweets.add(toTweet(row.getValue(), xxx));
+            tweets.add(toTweet(row.getValue(), (String)row.getKey()));
         }
         
         return tweets;

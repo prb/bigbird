@@ -18,8 +18,8 @@
     <module>api</module>
     <module>buildsetup</module>
     <module>couchdb</module>
-    <module>hadoop-support</module>
     <module>voldemort</module>
+    <module>web</module>
   </modules>
   
   <dependencies>

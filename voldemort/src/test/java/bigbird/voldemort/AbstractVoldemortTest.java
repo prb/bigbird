@@ -3,18 +3,16 @@ package bigbird.voldemort;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import voldemort.server.VoldemortConfig;
-import voldemort.server.VoldemortServer;
 
 public class AbstractVoldemortTest extends Assert {
     
-    private VoldemortServer server;
+    private EmbeddedVoldemort voldemort;
 
     @Before
     public void setUp() throws Exception {
-        VoldemortConfig config = VoldemortConfig.loadFromVoldemortHome(getVoldemortHome());
-        server = new VoldemortServer(config);
-        server.start();
+        voldemort = new EmbeddedVoldemort();
+        voldemort.setVoldemortHome(getVoldemortHome());
+        voldemort.start();
     }
 
     protected String getVoldemortHome() {
@@ -23,8 +21,8 @@ public class AbstractVoldemortTest extends Assert {
 
     @After
     public void tearDown() throws Exception {
-        if (server != null) {
-            server.stop();
+        if (voldemort != null) {
+            voldemort.stop();
         }
     }
 }

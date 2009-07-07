@@ -1,0 +1,32 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="
+   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+  <bean name="webTweetService" class="bigbird.web.WebTweetService">
+    <property name="tweetService" ref="voldemortTweetService"/>
+  </bean>
+  
+  <bean name="voldemortTweetService" class="bigbird.voldemort.VoldemortTweetService" lazy-init="false">
+    <property name="storeClientFactory" ref="storeClientFactory"/>
+  </bean>
+  
+  <bean name="voldemortUserService" class="bigbird.voldemort.VoldemortUserService" init-method="initialize" lazy-init="false">
+    <property name="storeClientFactory" ref="storeClientFactory"/>
+  </bean>
+  
+  <bean name="storeClientFactory" class="voldemort.client.SocketStoreClientFactory">
+    <constructor-arg>
+      <bean class="voldemort.client.ClientConfig">
+        <property name="bootstrapUrls">
+          <list>
+            <value>tcp://localhost:6666</value>
+          </list>
+        </property>
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+</beans>
