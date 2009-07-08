@@ -7,7 +7,9 @@ import bigbird.UserNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -22,7 +24,7 @@ public class WebTweetService {
     private TweetService tweetService;
     
     @GET
-    @Path("/{user}")
+    @Path("/users/{user}")
     @Produces("application/json")
     public Response getTweets(@PathParam("user") String user, @QueryParam("start") int start, @QueryParam("count") int count) {
         try {
@@ -35,8 +37,7 @@ public class WebTweetService {
     @GET
     @Produces("application/json")
     public Response getFriendsTimeline(@QueryParam("start") int start, @QueryParam("count") int count) {
-        // TODO: Get auth token from acegi
-        String user = "admin";
+        String user = getCurrentUser();
         try {
             return Response.ok().entity(toWeb(tweetService.getFriendsTimeline(user, start, count))).build();
         } catch (UserNotFoundException e) {
@@ -44,7 +45,26 @@ public class WebTweetService {
         }
     }
 
+    @POST
+    @Path("/tweet")
+    @Consumes("application/json")
+    public Response tweet(TweetRequest req) {
+        if (req == null || req.getTweet() == null) {
+            Response.status(400).entity("Tweet text cannot be empty.");
+        }
         
+        Tweet tweet = new Tweet();
+        tweet.setText(req.getTweet());
+        tweet.setUser(getCurrentUser());
+        
+        try {
+            tweetService.tweet(tweet);
+            return Response.ok().build();
+        } catch (UserNotFoundException e) {
+            return Response.status(401).build();
+        }
+    }
+    
     private List<WebTweet> toWeb(List<Tweet> tweets) {
         List<WebTweet> webTweets = new ArrayList<WebTweet>();
         
@@ -55,6 +75,11 @@ public class WebTweetService {
         return webTweets;
     }
 
+    private String getCurrentUser() {
+        // TODO: Get auth token from acegi
+        return "admin";
+    }
+    
     public void setTweetService(TweetService tweetService) {
         this.tweetService = tweetService;
     }

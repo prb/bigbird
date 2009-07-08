@@ -7,6 +7,7 @@ import bigbird.UserNotFoundException;
 import bigbird.impl.AbstractMapStore;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -224,30 +225,45 @@ public class VoldemortTweetService extends AbstractMapStore implements TweetServ
     }
 
 
-    public void tweet(Tweet tweet) throws UserNotFoundException {
-        Map<String, String> tweetMap = toMap(tweet);
+    public void tweet(final Tweet tweet) throws UserNotFoundException {
+        tweet.setDate(new Date());
+        final Map<String, String> tweetMap = toMap(tweet);
         
-        String userId = tweet.getUser();
+        final String userId = tweet.getUser();
+        
         Versioned<Map<String, String>> versioned = users.get(userId);
-        Map<String, String> user = versioned.getValue();
+        if (versioned == null) throw new UserNotFoundException(userId);
         
-        if (user == null) throw new UserNotFoundException(userId);
-        
-        String lastTweetStr = user.get(LAST_TWEET);
-        int lastTweet = Integer.valueOf(lastTweetStr);
-        int tweetIdx = ++lastTweet;
-        user.put(LAST_TWEET, new Integer(tweetIdx).toString());
-        
-        String id = userId + "-" + tweetIdx;
-        
-        if (!tweets.putIfNotObsolete(id, new Versioned(tweetMap))) {
-            
-        };
+        users.applyUpdate(new UpdateAction<String, Map<String,String>>() {
+            @Override
+            public void update(StoreClient<String, Map<String, String>> arg0) {
+                final Versioned<Map<String, String>> versioned = users.get(userId);
+                final Map<String, String> user = versioned.getValue();
+                
+                String lastTweetStr = user.get(LAST_TWEET);
+                int lastTweet = Integer.valueOf(lastTweetStr);
+                int tweetIdx = ++lastTweet;
+                user.put(LAST_TWEET, new Integer(tweetIdx).toString());
+                
+                // Increment the tweet counter. This action will be retried if it fails.
+                users.put(userId, versioned);
+
+                final String id = userId + "-" + tweetIdx;
+                
+                // Now actually insert the tweet
+                tweets.applyUpdate(new UpdateAction<String, Map<String,String>>() {
+                    @Override
+                    public void update(StoreClient<String, Map<String, String>> client) {
+                        tweets.put(id, new Versioned(tweetMap));
+                    }
+                });
+                
+                tweet.setId(id);
+            }
+        });
         
         // Update last tweet..
         // TODO: compensate if this fails
-        users.putIfNotObsolete(userId, versioned);
-        tweet.setId(id);
     }
     
     public void delete(String id) throws NotFoundException {

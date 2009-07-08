@@ -7,8 +7,8 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-            classpath:applicationContext-server.xml
-            classpath:applicationContext-client.xml
+            classpath:applicationContext-voldemort-test.xml
+            classpath:applicationContext-web.xml
         </param-value>
   </context-param>
 
@@ -29,7 +29,7 @@
   
   <servlet-mapping>
       <servlet-name>JerseySpringServlet</servlet-name>
-      <url-pattern>/*</url-pattern>
+      <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

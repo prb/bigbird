@@ -55,6 +55,10 @@
           <artifactId>stax-api</artifactId>
           <groupId>stax</groupId>
         </exclusion>
+        <exclusion>
+            <groupId>org.codehaus.jackson</groupId>
+        	<artifactId>jackson-asl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>

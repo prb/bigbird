@@ -9,15 +9,19 @@
     <property name="tweetService" ref="voldemortTweetService"/>
   </bean>
   
-  <bean name="voldemortTweetService" class="bigbird.voldemort.VoldemortTweetService" lazy-init="false">
+  <bean name="voldemortUserService" class="bigbird.voldemort.VoldemortUserService" 
+        init-method="initialize" lazy-init="false" depends-on="voldemort">
     <property name="storeClientFactory" ref="storeClientFactory"/>
   </bean>
   
-  <bean name="voldemortUserService" class="bigbird.voldemort.VoldemortUserService" init-method="initialize" lazy-init="false">
+  <bean name="voldemortTweetService" class="bigbird.voldemort.VoldemortTweetService" lazy-init="false" 
+     depends-on="voldemortUserService">
     <property name="storeClientFactory" ref="storeClientFactory"/>
   </bean>
   
-  <bean name="storeClientFactory" class="voldemort.client.SocketStoreClientFactory">
+  <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+  
+  <bean name="storeClientFactory" class="voldemort.client.SocketStoreClientFactory" scope="singleton">
     <constructor-arg>
       <bean class="voldemort.client.ClientConfig">
         <property name="bootstrapUrls">

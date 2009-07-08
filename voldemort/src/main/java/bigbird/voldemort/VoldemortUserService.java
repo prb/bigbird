@@ -9,6 +9,7 @@ import java.util.Map;
 
 import voldemort.client.StoreClient;
 import voldemort.client.StoreClientFactory;
+import voldemort.versioning.Versioned;
 
 public class VoldemortUserService implements UserService {
 
@@ -38,7 +39,12 @@ public class VoldemortUserService implements UserService {
         userMap.put(NAME, user.getName());
         userMap.put(CREATED, new Long(new Date().getTime()).toString());
         userMap.put(LAST_TWEET, "0");
+        
         users.put(user.getUsername(), userMap);
+        
+        Versioned<Map<String, String>> versioned = users.get(user.getUsername());
+        
+        versioned.toString();
     }
 
     public void setStoreClientFactory(StoreClientFactory storeClientFactory) {
