@@ -17,6 +17,11 @@
       <version>${version}</version>
     </dependency>
     <dependency>
+      <groupId>bigbird</groupId>
+      <artifactId>bigbird-queue</artifactId>
+      <version>${version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.linkedin.voldemort</groupId>
       <artifactId>voldemort</artifactId>
       <version>${voldemort.version}</version>

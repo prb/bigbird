@@ -17,17 +17,6 @@
       <artifactId>bigbird-api</artifactId>
       <version>${version}</version>
     </dependency>
-    <dependency>
-      <groupId>bigbird</groupId>
-      <artifactId>bigbird-voldemort</artifactId>
-      <version>${version}</version>
-    </dependency>
-    <dependency>
-      <groupId>bigbird</groupId>
-      <artifactId>bigbird-voldemort</artifactId>
-      <version>${version}</version>
-      <type>test-jar</type>
-    </dependency>
   </dependencies>
   <repositories>
     <repository>
