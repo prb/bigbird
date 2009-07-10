@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
  *   commands which are currently executing and could not be deleted will be run again.
  */
 public abstract class AbstractCommandQueue implements CommandQueue {
-    private final Log log = LogFactory.getLog(getClass());
+    protected final Log log = LogFactory.getLog(getClass());
     
     protected String nodeName;
     
@@ -91,10 +91,10 @@ public abstract class AbstractCommandQueue implements CommandQueue {
     protected abstract void getNextBatch();
 
     protected void finishCommand(long commandId) {
+        delete(commandId);  
         if (minimum < commandId) {
             minimum = commandId;
         }
-        delete(commandId);  
     }
     
     protected abstract void delete(long commandId);

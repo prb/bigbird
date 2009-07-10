@@ -1,10 +1,10 @@
 package bigbird.queue.voldemort;
 
+import bigbird.queue.AbstractCommandQueue;
+import bigbird.queue.Command;
 import voldemort.client.StoreClient;
 import voldemort.client.StoreClientFactory;
 import voldemort.client.UpdateAction;
-import bigbird.queue.AbstractCommandQueue;
-import bigbird.queue.Command;
 
 public class VoldemortCommandQueue extends AbstractCommandQueue {
 
@@ -19,20 +19,25 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
         
         final long id = getNextId();
         
-        boolean success = client.applyUpdate(new UpdateAction<String, String>() {
-            @Override
-            public void update(StoreClient<String, String> client) {
-                String nodeAndId = getVoldemortKey(id);
-                
-                client.put(nodeAndId, new String(serializedCommand));
+        try {
+            boolean success = client.applyUpdate(new UpdateAction<String, String>() {
+                @Override
+                public void update(StoreClient<String, String> client) {
+                    String nodeAndId = getVoldemortKey(id);
+                    
+                    client.put(nodeAndId, new String(serializedCommand));
+                }
+            });
+            
+            if (!success) {
+                return -1;
             }
-        });
-        
-        if (!success) {
+            
+            return id;
+        } catch (Exception e) {
+            log.error(e);
             return -1;
         }
-        
-        return id;
     }
     
     @Override

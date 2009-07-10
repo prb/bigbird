@@ -6,8 +6,9 @@ import org.junit.Before;
 
 public class AbstractVoldemortTest extends Assert {
     
-    private EmbeddedVoldemort voldemort;
-
+    protected EmbeddedVoldemort voldemort;
+    protected boolean stop = true;
+    
     @Before
     public void setUp() throws Exception {
         voldemort = new EmbeddedVoldemort();
@@ -21,7 +22,7 @@ public class AbstractVoldemortTest extends Assert {
 
     @After
     public void tearDown() throws Exception {
-        if (voldemort != null) {
+        if (voldemort != null && stop) {
             voldemort.stop();
         }
     }
