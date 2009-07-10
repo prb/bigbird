@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>bigbird-parent</artifactId>
+    <groupId>bigbird</groupId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>bigbird</groupId>
+  <artifactId>bigbird-queue</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <name>Reliable Queueing Interface</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>bigbird</groupId>
+      <artifactId>bigbird-api</artifactId>
+      <version>${version}</version>
+    </dependency>
+    <dependency>
+      <groupId>bigbird</groupId>
+      <artifactId>bigbird-voldemort</artifactId>
+      <version>${version}</version>
+    </dependency>
+    <dependency>
+      <groupId>bigbird</groupId>
+      <artifactId>bigbird-voldemort</artifactId>
+      <version>${version}</version>
+      <type>test-jar</type>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>java.net</id>
+      <name>java.net Repository</name>
+      <url>http://download.java.net/maven/2/</url>
+    </repository>
+  </repositories>
+</project>

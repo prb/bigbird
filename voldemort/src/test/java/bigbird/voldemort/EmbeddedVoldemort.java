@@ -15,7 +15,9 @@ public class EmbeddedVoldemort {
     }
     
     public void stop() {
-        server.stop();
+        if (server != null) {
+            server.stop();
+        }
     }
 
     public String getVoldemortHome() {

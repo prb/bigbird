@@ -21,10 +21,11 @@ public interface TweetService {
  
     Tweet getTweet(String id) throws NotFoundException;
     
+    
+    
     void tweet(Tweet tweet) throws UserNotFoundException;
     
     void delete(String id) throws NotFoundException;
-    
     
     void startFollowing(String user, String toStartUser);
 
