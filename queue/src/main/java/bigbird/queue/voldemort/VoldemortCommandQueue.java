@@ -14,6 +14,11 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
 
     private StoreClient<String, String> client;
     
+    /**
+     * Find the last maximum and minimum stored. Try to restore all those commands
+     * and run them again.
+     * @throws Exception
+     */
     public void initialize() throws Exception {
         String maxStr = client.getValue(nodeName + ":maximum");
         if (maxStr != null) {
@@ -30,6 +35,10 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
                 for (long l = minimum; l < maximum; l++) {
                     // Restore commands
                     String value = client.getValue(nodeName + ":" + l);
+                    if (value == null) {
+                        continue;
+                    }
+                    
                     try {
                         ObjectInputStream objectStream = new ObjectInputStream(new ByteArrayInputStream(value.getBytes()));
                         addCommand((Command)objectStream.readObject(), l);
@@ -42,6 +51,14 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
             }
         };
         commandExecutor.execute(runnable);
+    }
+    
+    public void shutdown() {
+        String maximumKey = nodeName + ":maximum";
+        String minimumKey = nodeName + ":minimum";
+        System.out.println("Shutting down " + maximum + " - " + minimum);
+        client.put(maximumKey, new Long(maximum).toString());
+        client.put(minimumKey, new Long(minimum).toString());
     }
     
     protected long storeRemotely(Command command) {
@@ -84,7 +101,6 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
         return nodeName + ":" + new Long(id).toString();
     }
     
-
     @Override
     protected void getNextBatch() {
         client.applyUpdate(new UpdateAction<String, String>() {

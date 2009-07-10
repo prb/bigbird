@@ -13,16 +13,21 @@ import org.apache.commons.logging.LogFactory;
  * Idea here is that following happens:
  * 1. Store the command you want to execute. This will be persisted reliably upon multiple servers.
  * 2. Threads in the background will pull off commands and execute them.
- * 
- * Scenarios:
- * 
- * - Machine executing commands dies:
+ * <br/>
+ * Commands must be idempotent as there is chance that they may get executed again on restart.
+ * <br/>
+ * Failure Scenarios:
+ * <ul>
+ * <li>
+ * Machine executing commands dies:
  *   This is the same machine as the CommandQueue. When it comes back online, it will restore
  *   the queue and begin processing commands.
- *   
- * - Remote storage dies:
+ * </li>
+ * <li>  
+ * Remote storage dies:
  *   add() will throw an error and will not allow new commands to be added.
  *   commands which are currently executing and could not be deleted will be run again.
+ * </li>
  */
 public abstract class AbstractCommandQueue implements CommandQueue {
     protected final Log log = LogFactory.getLog(getClass());
@@ -95,9 +100,10 @@ public abstract class AbstractCommandQueue implements CommandQueue {
     protected abstract void getNextBatch();
 
     protected void finishCommand(long commandId) {
-        delete(commandId);  
-        if (minimum < commandId) {
-            minimum = commandId;
+        delete(commandId); 
+        
+        if (minimum <= commandId) {
+            minimum = commandId + 1;
         }
     }
     
