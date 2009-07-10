@@ -1,5 +1,9 @@
 package bigbird.queue.voldemort;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 import bigbird.queue.AbstractCommandQueue;
 import bigbird.queue.Command;
 import voldemort.client.StoreClient;
@@ -11,7 +15,33 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
     private StoreClient<String, String> client;
     
     public void initialize() throws Exception {
+        String maxStr = client.getValue(nodeName + ":maximum");
+        if (maxStr != null) {
+            maximum = Long.valueOf(maxStr);
+        } else {
+            return;
+        }
         
+        String minStr = client.getValue(nodeName + ":minimum");
+        if (minStr != null) minimum = Long.valueOf(minStr);
+        
+        Runnable runnable = new Runnable() {
+            public void run() {
+                for (long l = minimum; l < maximum; l++) {
+                    // Restore commands
+                    String value = client.getValue(nodeName + ":" + l);
+                    try {
+                        ObjectInputStream objectStream = new ObjectInputStream(new ByteArrayInputStream(value.getBytes()));
+                        addCommand((Command)objectStream.readObject(), l);
+                    } catch (IOException e) {
+                        log.error(e);
+                    } catch (ClassNotFoundException e) {
+                        log.error(e);
+                    }
+                }
+            }
+        };
+        commandExecutor.execute(runnable);
     }
     
     protected long storeRemotely(Command command) {

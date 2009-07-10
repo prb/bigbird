@@ -36,27 +36,31 @@ public abstract class AbstractCommandQueue implements CommandQueue {
     
     private long nextId;
     
-    private Executor commandExecutor;
+    protected Executor commandExecutor;
     private Executor indexIncrementExecutor;
     
     private boolean gettingNextBatch = false;
     
-    private Map<String,Object> commandContext;
+    protected Map<String,Object> commandContext;
     
     public boolean add(final Command command) {
         final long commandId = storeRemotely(command);
         
         if (commandId != -1) {
-            commandExecutor.execute(new Runnable() {
-                public void run() {
-                    command.execute(commandContext);
-                    finishCommand(commandId);
-                }
-            });
+            addCommand(command, commandId);
             return true;
         }
         
         return false;
+    }
+
+    protected void addCommand(final Command command, final long commandId) {
+        commandExecutor.execute(new Runnable() {
+            public void run() {
+                command.execute(commandContext);
+                finishCommand(commandId);
+            }
+        });
     }
     
     protected synchronized long getNextId() {
