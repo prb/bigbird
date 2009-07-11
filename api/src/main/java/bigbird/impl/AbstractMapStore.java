@@ -11,7 +11,8 @@ public class AbstractMapStore {
     public static final String DATE = "date";
     public static final String TEXT = "text";
     public static final String USER = "user";
-    
+    public static final String ID = "id";
+
     // User constants
     public static final String LAST_TWEET = "lastTweet";
 
@@ -20,6 +21,7 @@ public class AbstractMapStore {
         tweetMap.put(DATE, new Long(tweet.getDate().getTime()).toString());
         tweetMap.put(TEXT, tweet.getText());
         tweetMap.put(USER, tweet.getUser());
+        tweetMap.put(ID, tweet.getId());
         return tweetMap;
     }
     

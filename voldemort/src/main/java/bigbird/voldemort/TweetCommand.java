@@ -1,13 +1,13 @@
 package bigbird.voldemort;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import voldemort.client.StoreClient;
 import voldemort.versioning.Versioned;
 
@@ -42,21 +42,40 @@ public class TweetCommand extends AbstractVoldemortCommand {
             return null;
         }
         
-//        Set<String> followers = VoldemortTweetService.asSet(user.get(VoldemortTweetService.FOLLOWERS));
-//        
-//        for (String follower : followers) {
-//            Versioned<List<String>> timeline = friendsTimeline.get(follower);
-//            
-//            insertTweet(timeline, tweetMap);
-//            
-//            friendsTimeline.put(follower, timeline);
-//        }
+        Set<String> followers = VoldemortTweetService.asSet(user.get(VoldemortTweetService.FOLLOWERS));
+        
+        for (String follower : followers) {
+            Versioned<List<String>> timeline = friendsTimeline.get(follower);
+            
+            if (timeline == null) {
+                timeline = new Versioned<List<String>>(new ArrayList<String>());
+            }
+            insertTweet(timeline);
+            
+            friendsTimeline.put(follower, timeline);
+        }
         return null;
     }
-//
-//    private void insertTweet(Versioned<List<String>> timeline, Map<String, String> tweetMap2) {
-//        // TODO Auto-generated method stub
-//        
-//    }
+
+    private void insertTweet(Versioned<List<String>> timeline) {
+        String dateStr = tweetMap.get(VoldemortTweetService.DATE);
+        Long date = new Long(dateStr);
+        
+        String timelineId = tweetId + ":" + dateStr;
+        
+        List<String> timelineList = timeline.getValue();
+        for (int i = 0; i < timelineList.size(); i++) {
+            String id = timelineList.get(0);
+            String[] split = id.split(":");
+            Long timelineDate = new Long(split[1]);
+            
+            if (timelineDate < date) {
+                timelineList.add(i, timelineId);
+                return;
+            }
+        }
+        
+        timelineList.add(timelineId);
+    }
 
 }

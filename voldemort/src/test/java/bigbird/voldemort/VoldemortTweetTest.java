@@ -45,25 +45,50 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         
         tweet("admin", "Hello World");
 
-        // Dan is now following Admin
+        doStartFollow();
+        // test idempotentcy
+        doStartFollow();
+
+        doStopFollow();
+        // test idempotentcy
+        doStopFollow();
+        
+        tweet("admin", "Hello 2");
+        tweet("paul", "Hello 3");
+        tweet("admin", "Hello 4");
+        tweet("paul", "Hello 5");
+        
         tweetService.startFollowing("dan", "admin");
-        
-        Thread.sleep(1000);
-        
-        Set<String> followers = tweetService.getFollowers("admin");
-        assertNotNull(followers);
-        assertTrue(followers.contains("dan"));
-        
-        Set<String> following = tweetService.getFollowing("dan");
-        assertNotNull(following);
-        assertTrue(following.contains("admin"));
+
+        Thread.sleep(500);
         
         List<Tweet> friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
-        assertEquals(1, friendsTimeline.size());
+        assertEquals(3, friendsTimeline.size());
+        
+        String tweetId = tweet("admin", "Hello 6");
+        
+        Thread.sleep(500);
+        
+        friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
+        assertEquals(4, friendsTimeline.size());
+        
+        assertEquals(tweetId, friendsTimeline.get(0).getId());
+        
+        tweetService.startFollowing("dan", "paul");
 
+        Thread.sleep(500);
+        
+        friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
+        assertEquals(6, friendsTimeline.size());
+    }
+
+    private void doStopFollow() throws BackendException, InterruptedException, UserNotFoundException {
+        Set<String> followers;
+        Set<String> following;
+        List<Tweet> friendsTimeline;
         tweetService.stopFollowing("dan", "admin");
         
-        Thread.sleep(1000);
+        Thread.sleep(500);
         
         followers = tweetService.getFollowers("admin");
         assertNotNull(followers);
@@ -75,33 +100,34 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         
         friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
         assertEquals(0, friendsTimeline.size());
-        
-        tweet("admin", "Hello 2");
-        tweet("paul", "Hello 3");
-        tweet("admin", "Hello 4");
-        tweet("paul", "Hello 5");
-        
-        tweetService.startFollowing("dan", "admin");
-
-        Thread.sleep(1000);
-        
-        friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
-        assertEquals(3, friendsTimeline.size());
-        
-        tweetService.startFollowing("dan", "paul");
-
-        Thread.sleep(1000);
-        
-        friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
-        assertEquals(5, friendsTimeline.size());
     }
 
-    private void tweet(String user, String message) throws UserNotFoundException, BackendException {
+    private void doStartFollow() throws BackendException, InterruptedException, UserNotFoundException {
+        // Dan is now following Admin
+        tweetService.startFollowing("dan", "admin");
+        
+        Thread.sleep(500);
+        
+        Set<String> followers = tweetService.getFollowers("admin");
+        assertNotNull(followers);
+        assertTrue(followers.contains("dan"));
+        
+        Set<String> following = tweetService.getFollowing("dan");
+        assertNotNull(following);
+        assertTrue(following.contains("admin"));
+        
+        List<Tweet> friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
+        assertEquals(1, friendsTimeline.size());
+    }
+
+    private String tweet(String user, String message) throws UserNotFoundException, BackendException {
         Tweet tweet = new Tweet();
         tweet.setText(message);
         tweet.setDate(new Date());
         tweet.setUser(user);
         
         tweetService.tweet(tweet);
+        
+        return tweet.getId();
     }
 }

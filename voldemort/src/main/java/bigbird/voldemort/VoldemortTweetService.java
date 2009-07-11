@@ -78,7 +78,12 @@ public class VoldemortTweetService extends AbstractMapStore implements TweetServ
             String[] split = idAndTime.split(":");
             
             String id = split[0];
-            tweetList.add(toTweet(tweets.getValue(id), id));
+            Map<String, String> tweetMap = tweets.getValue(id);
+            if (tweetMap != null) {
+                tweetList.add(toTweet(tweetMap, id));
+            } else {
+                System.out.println("Tweet missing " + id);
+            }
         }
         
         return tweetList;

@@ -73,8 +73,13 @@ public abstract class AbstractCommandQueue implements CommandQueue {
     protected void addCommand(final Command command, final long commandId) {
         commandExecutor.execute(new Runnable() {
             public void run() {
+                long start = System.currentTimeMillis();
                 command.execute(commandContext);
                 finishCommand(commandId);
+                
+                if (log.isInfoEnabled()) {
+                    log.info("Executed " + command.toString() + " in " + (System.currentTimeMillis() - start) + " ms");
+                }
             }
         });
     }

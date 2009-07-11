@@ -59,13 +59,19 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
             for (Tweet tweet : recentTweets) {
                 long date = tweet.getDate().getTime();
                 
+                // This part of the command already got executed, so skip it
+                String timelineId = getTimelineId(tweet);
+                if (timeline.contains(timelineId)) {
+                    continue;
+                }
+                
                 while (timelineIdx < timeline.size() && timelineIdx < VoldemortTweetService.MAX_TWEETS_IN_TIMELINE) {
                     String id = timeline.get(timelineIdx);
                     String[] split = id.split(":");
                     timelineDate = new Long(split[1]);
                     
                     if (timelineDate > date) {
-                        addToTimeline(timeline, timelineIdx, tweet);
+                        addToTimeline(timeline, timelineIdx, timelineId);
                         timelineIdx++;
                         break;
                     }
@@ -74,7 +80,7 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
                 }
                 
                 if (timelineIdx == timeline.size()) {
-                    addToTimeline(timeline, timelineIdx, tweet);
+                    addToTimeline(timeline, timelineIdx, timelineId);
                 }
                 
                 if (timelineIdx == VoldemortTweetService.MAX_TWEETS_IN_TIMELINE) {
@@ -115,7 +121,11 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
         users.put(toStartUser, versionedUser);
     }
     
-    private void addToTimeline(List<String> timeline, int timelineIdx, Tweet tweet) {
-        timeline.add(timelineIdx, tweet.getId() + ":" + tweet.getDate().getTime());
+    private void addToTimeline(List<String> timeline, int timelineIdx, String timelineId) {
+        timeline.add(timelineIdx, timelineId);
+    }
+
+    private String getTimelineId(Tweet tweet) {
+        return tweet.getId() + ":" + tweet.getDate().getTime();
     }
 }
