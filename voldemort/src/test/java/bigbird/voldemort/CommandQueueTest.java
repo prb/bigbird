@@ -1,5 +1,6 @@
 package bigbird.voldemort;
 
+import bigbird.queue.CannotStoreCommandException;
 import bigbird.queue.Command;
 
 import java.io.Serializable;
@@ -28,7 +29,7 @@ public class CommandQueueTest extends AbstractVoldemortTest {
         Command command = new CounterCommand();
         int totalCount = 200;
         for (int i = 0; i < totalCount; i ++) {
-            queue.add(command);
+            queue.addAsync(command);
         }
         
         waitForCount(totalCount);
@@ -61,7 +62,12 @@ public class CommandQueueTest extends AbstractVoldemortTest {
         voldemort.stop();
         stop = false;
         
-        assertFalse(queue.add(command));
+        try {
+            queue.add(command);
+            fail("Shoult not be able to store command");
+        } catch (CannotStoreCommandException e) {
+            // expected
+        }
 //        
 //        StoreClient<String, String> client = factory.getStoreClient("commandQueues");
 //        assertEquals("300", client.getValue(nodeName + ":maximum"));
@@ -86,7 +92,7 @@ public class CommandQueueTest extends AbstractVoldemortTest {
             
         });
         
-        assertTrue(queue.add(command));
+        queue.addAsync(command);
         
         assertEquals(0, counter);
         
@@ -132,15 +138,12 @@ public class CommandQueueTest extends AbstractVoldemortTest {
     public void increment() {
         counter++;
     }
-
-    protected String getVoldemortHome() {
-        return "../voldemort/" + super.getVoldemortHome();
-    }
     
     public static class CounterCommand extends Command implements Serializable {
         @Override
-        public void execute(Map<String, Object> commandContext) {
+        public Object execute(Map<String, Object> commandContext) {
             ((CommandQueueTest) commandContext.get("test")).increment();
+            return null;
         }
     }
 }

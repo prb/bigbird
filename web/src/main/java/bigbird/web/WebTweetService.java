@@ -1,5 +1,6 @@
 package bigbird.web;
 
+import bigbird.BackendException;
 import bigbird.Tweet;
 import bigbird.TweetService;
 import bigbird.UserNotFoundException;
@@ -16,11 +17,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A wrapper to TweetServices to make them a RESTful API. 
  */
 @Path("/")
 public class WebTweetService {
+    protected final Log log = LogFactory.getLog(getClass());
     private TweetService tweetService;
     
     @GET
@@ -62,6 +67,9 @@ public class WebTweetService {
             return Response.ok().build();
         } catch (UserNotFoundException e) {
             return Response.status(401).build();
+        } catch (BackendException e) {
+            log.error(e);
+            return Response.status(500).build();
         }
     }
     

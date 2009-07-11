@@ -9,6 +9,7 @@ import bigbird.impl.AbstractMapStore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jcouchdb.db.Database;
 import org.jcouchdb.db.Options;
@@ -104,6 +105,16 @@ public class CouchDbTweetService extends AbstractMapStore implements TweetServic
 
     public void setDatabase(Database db) {
         this.db = db;
+    }
+
+    public Set<String> getFollowers(String user) throws UserNotFoundException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Set<String> getFollowing(String user) throws UserNotFoundException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

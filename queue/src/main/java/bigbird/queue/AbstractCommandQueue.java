@@ -3,6 +3,7 @@ package bigbird.queue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -46,17 +47,27 @@ public abstract class AbstractCommandQueue implements CommandQueue {
     
     private boolean gettingNextBatch = false;
     
-    protected Map<String,Object> commandContext;
+    protected Map<String,Object> commandContext = new HashMap<String, Object>();
     
-    public boolean add(final Command command) {
+    public Object add(final Command command) throws CannotStoreCommandException {
+        final long commandId = storeRemotely(command);
+        
+        if (commandId != -1) {
+            return command.execute(commandContext);
+        } else {
+            throw new CannotStoreCommandException();
+        }
+    }
+    
+
+    public void addAsync(final Command command) throws CannotStoreCommandException {
         final long commandId = storeRemotely(command);
         
         if (commandId != -1) {
             addCommand(command, commandId);
-            return true;
+        } else {
+            throw new CannotStoreCommandException();
         }
-        
-        return false;
     }
 
     protected void addCommand(final Command command, final long commandId) {
@@ -112,6 +123,11 @@ public abstract class AbstractCommandQueue implements CommandQueue {
     public void setNodeName(String node) {
         this.nodeName = node;
     }
+
+    public Map<String, Object> getCommandContext() {
+        return commandContext;
+    }
+
 
     public void setCommandContext(Map<String, Object> commandContext) {
         this.commandContext = commandContext;

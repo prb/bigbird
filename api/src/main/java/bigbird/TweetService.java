@@ -1,6 +1,7 @@
 package bigbird;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TweetService {
     List<Tweet> getRecentTweets(String user) throws UserNotFoundException;
@@ -21,13 +22,16 @@ public interface TweetService {
  
     Tweet getTweet(String id) throws NotFoundException;
     
+    Set<String> getFollowers(String user) throws UserNotFoundException;
+    
+    Set<String> getFollowing(String user) throws UserNotFoundException;
     
     
-    void tweet(Tweet tweet) throws UserNotFoundException;
+    void tweet(Tweet tweet) throws UserNotFoundException, BackendException;
     
-    void delete(String id) throws NotFoundException;
+    void delete(String id) throws NotFoundException, BackendException;
     
-    void startFollowing(String user, String toStartUser);
+    void startFollowing(String user, String toStartUser) throws UserNotFoundException, BackendException;
 
-    void stopFollowing(String user, String toStopUser);
+    void stopFollowing(String user, String toStopUser) throws UserNotFoundException, BackendException;
 }

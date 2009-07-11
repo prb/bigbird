@@ -1,37 +1,18 @@
 package bigbird.voldemort;
 
+import bigbird.BackendException;
 import bigbird.Tweet;
 import bigbird.User;
 import bigbird.UserNotFoundException;
-import bigbird.voldemort.VoldemortTweetService;
-import bigbird.voldemort.VoldemortUserService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
-import voldemort.client.ClientConfig;
-import voldemort.client.SocketStoreClientFactory;
 
 public class VoldemortTweetTest extends AbstractVoldemortTest {
-    private VoldemortTweetService tweetService;
-    private VoldemortUserService userService;
 
-    @Before
-    public void setUpServices() throws Exception {
-        ClientConfig config = new ClientConfig();
-        config.setBootstrapUrls("tcp://localhost:6666");
-        
-        SocketStoreClientFactory factory = new SocketStoreClientFactory(config);
-        tweetService = new VoldemortTweetService();
-        tweetService.setStoreClientFactory(factory);
-        
-        userService = new VoldemortUserService();
-        userService.setStoreClientFactory(factory);
-        userService.initialize();
-    }
-    
     @Test
     public void testBasicTweet() throws Exception {
         Tweet tweet = new Tweet();
@@ -67,10 +48,30 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         // Dan is now following Admin
         tweetService.startFollowing("dan", "admin");
         
+        Thread.sleep(1000);
+        
+        Set<String> followers = tweetService.getFollowers("admin");
+        assertNotNull(followers);
+        assertTrue(followers.contains("dan"));
+        
+        Set<String> following = tweetService.getFollowing("dan");
+        assertNotNull(following);
+        assertTrue(following.contains("admin"));
+        
         List<Tweet> friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
         assertEquals(1, friendsTimeline.size());
 
         tweetService.stopFollowing("dan", "admin");
+        
+        Thread.sleep(1000);
+        
+        followers = tweetService.getFollowers("admin");
+        assertNotNull(followers);
+        assertFalse(followers.contains("dan"));
+        
+        following = tweetService.getFollowing("dan");
+        assertNotNull(following);
+        assertFalse(following.contains("admin"));
         
         friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
         assertEquals(0, friendsTimeline.size());
@@ -81,18 +82,21 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         tweet("paul", "Hello 5");
         
         tweetService.startFollowing("dan", "admin");
+
+        Thread.sleep(1000);
         
         friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
         assertEquals(3, friendsTimeline.size());
         
         tweetService.startFollowing("dan", "paul");
+
+        Thread.sleep(1000);
         
         friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
         assertEquals(5, friendsTimeline.size());
-        
     }
 
-    private void tweet(String user, String message) throws UserNotFoundException {
+    private void tweet(String user, String message) throws UserNotFoundException, BackendException {
         Tweet tweet = new Tweet();
         tweet.setText(message);
         tweet.setDate(new Date());

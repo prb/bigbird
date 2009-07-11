@@ -15,7 +15,13 @@
   </bean>
   
   <bean name="voldemortTweetService" class="bigbird.voldemort.VoldemortTweetService" lazy-init="false" 
-     depends-on="voldemortUserService">
+     init-method="initialize" depends-on="voldemortUserService">
+    <property name="storeClientFactory" ref="storeClientFactory"/>
+    <property name="commandQueue" ref="commandQueue"/>
+  </bean>
+  
+  <bean name="commandQueue" class="bigbird.voldemort.VoldemortCommandQueue" lazy-init="false" 
+     init-method="initialize">
     <property name="storeClientFactory" ref="storeClientFactory"/>
   </bean>
   
