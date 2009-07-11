@@ -29,11 +29,12 @@ public class AbstractVoldemortTest extends Assert {
         
         ClientConfig config = new ClientConfig();
         config.setBootstrapUrls("tcp://localhost:6666");
+        config.setMaxThreads(10);
         
         SocketStoreClientFactory factory = new SocketStoreClientFactory(config);
         
         queue = new VoldemortCommandQueue();
-        commandExecutor = new ThreadPoolExecutor(1, 10, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+        commandExecutor = new ThreadPoolExecutor(1, 100, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
         queue.setCommandExecutor(commandExecutor);
         queue.setIndexIncrementExecutor(new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>()));
         queue.setStoreClientFactory(factory);

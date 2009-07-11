@@ -1,0 +1,32 @@
+<html>
+<head>
+  <title>BigBird: Login</title>
+  <link type="text/css" rel="stylesheet" href="public/login.css" />
+</head>
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<strong>big</strong>bird
+		</div>
+		<div id="container">
+			<div id="side-a">
+				<img alt="" src="public/bigbird-large.jpg">
+			  Isn't flying wonderful? It makes me feel like a bird.
+			</div>
+			
+			<div id="side-b">
+				<div>
+				  <strong>Please sign in</strong>
+				</div>
+				<form action="./j_spring_security_check" method="post">
+					<div>username: <input name="j_username" size="30" value="admin"/></div>
+					<div>password: <input name="j_password" type="password" size="30" value="password"/></div>
+                    <input type="submit" value="Login" />
+				</form>
+			</div>
+			<div id="footer">
+			</div>
+		</div>
+	</div>
+</body>
+</html>

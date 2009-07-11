@@ -1,0 +1,33 @@
+#wrapper {
+    align: center;
+	text-align: left;
+	margin: 0px auto;
+	padding: 0px;
+	border:0;
+	width: 600px;
+	background: url("/path/to/your/background_cols.gif") repeat;
+}
+
+#header {
+	margin: 0 0 15px 0;
+	font-size: 3em;
+	font-family: sans-serif
+}
+
+#side-a {
+	float: left;
+	width: 300px;
+}
+
+#side-b { 
+	margin: 0;
+	padding: 10px;
+	
+	float: left;
+	width: 150px;
+	height: 1% /* Holly hack for Peekaboo Bug */
+}
+
+#footer {
+	clear: both;
+}

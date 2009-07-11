@@ -12,6 +12,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class EmbeddedWeb {
 
     private Server server;
+    private WebAppContext context;
     
     public void start() throws Exception {
         server = new Server();
@@ -22,15 +23,15 @@ public class EmbeddedWeb {
         server.addConnector(connector);
 
         
-        WebAppContext wac = new WebAppContext();
-        wac.setContextPath("/");
-        wac.setWar("./src/main/webapp");
+        context = new WebAppContext();
+        context.setContextPath("/");
+        context.setWar("./src/main/webapp");
         
         Map<String, Boolean> params = new HashMap<String, Boolean>();
         params.put("useFileMappedBuffer", Boolean.FALSE);
-        wac.setInitParams(params);
+        context.setInitParams(params);
         
-        server.addHandler(wac);
+        server.addHandler(context);
         
         server.setStopAtShutdown(true);
 
@@ -45,4 +46,9 @@ public class EmbeddedWeb {
         new EmbeddedWeb().start();
     }
 
+    public WebAppContext getContext() {
+        return context;
+    }
+
+    
 }

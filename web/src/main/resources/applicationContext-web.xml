@@ -21,7 +21,7 @@
   </bean>
   
   <bean name="commandQueue" class="bigbird.voldemort.VoldemortCommandQueue" lazy-init="false" 
-     init-method="initialize">
+     init-method="initialize" destroy-method="shutdown">
     <property name="storeClientFactory" ref="storeClientFactory"/>
   </bean>
   

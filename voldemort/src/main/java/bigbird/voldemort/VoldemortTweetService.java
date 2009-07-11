@@ -48,13 +48,19 @@ public class VoldemortTweetService extends AbstractMapStore implements TweetServ
         int lastTweet = Integer.valueOf(user.get(LAST_TWEET));
         
         List<Tweet> tweetList = new ArrayList<Tweet>();
-        for (int i = start; i < start+count; i++) {
-            int idx = lastTweet -i;
+        for (int i = start; tweetList.size() < start+count; i++) {
+            int idx = lastTweet - i;
 
-            if (idx == 0) break;
+            if (idx == 0) {
+                break;
+            }
             
             String id = userId + "-" + idx;
             Map<String, String> tweetMap = tweets.getValue(id);
+            if (tweetMap == null) {
+                continue;
+            }
+            
             Tweet tweet = toTweet(tweetMap, id);            
             tweetList.add(tweet);
         }

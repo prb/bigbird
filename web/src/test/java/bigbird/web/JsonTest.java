@@ -1,12 +1,19 @@
 package bigbird.web;
 
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import junit.framework.Assert;
 
@@ -26,7 +33,8 @@ public class JsonTest extends Assert {
     
     @Test
     public void testGetUser() throws Exception {
-        HttpClient client = new HttpClient();
+        HttpClient client = getHttpClient();
+        
         PostMethod tweetMethod = new PostMethod("http://localhost:8080/api/tweet");
         tweetMethod.setRequestEntity(new StringRequestEntity("{\"tweet\":\"Hello World\"}", "application/json", "UTF-8"));
         int result = client.executeMethod(tweetMethod);
@@ -35,6 +43,22 @@ public class JsonTest extends Assert {
         GetMethod get = new GetMethod("http://localhost:8080/api/users/admin?start=0&count=20");
         result = client.executeMethod(get);
         assertEquals(200, result);
-        Thread.sleep(100000);
+    }
+
+    private HttpClient getHttpClient() {
+        HttpClient client = new HttpClient();
+        client.getParams().setAuthenticationPreemptive(true);
+        Credentials creds = new UsernamePasswordCredentials("admin", "password");
+        client.getState().setCredentials(new AuthScope("localhost", 8080, AuthScope.ANY_REALM), creds);
+        return client;
+    }
+
+    protected void login(final String username, final String password) {
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, password));
+    }
+
+    protected WebApplicationContext getApplicationContext() {
+        return WebApplicationContextUtils.getWebApplicationContext(jetty.getContext().getServletContext());
     }
 }
+

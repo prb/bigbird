@@ -9,7 +9,7 @@ import java.util.Map;
 
 import voldemort.client.StoreClient;
 import voldemort.client.StoreClientFactory;
-import voldemort.versioning.Versioned;
+import voldemort.client.UpdateAction;
 
 public class VoldemortUserService implements UserService {
 
@@ -32,19 +32,38 @@ public class VoldemortUserService implements UserService {
         }
     }
     
-    public void newUser(User user, String password) {
-        Map<String,String> userMap = new HashMap<String, String>();
+    public void newUser(final User user, String password) {
+        final Map<String,String> userMap = new HashMap<String, String>();
         userMap.put(USERNAME, user.getUsername());
         userMap.put(PASSWORD, password);
         userMap.put(NAME, user.getName());
         userMap.put(CREATED, new Long(new Date().getTime()).toString());
         userMap.put(LAST_TWEET, "0");
         
-        users.put(user.getUsername(), userMap);
+        boolean success = users.applyUpdate(new UpdateAction<String, Map<String,String>>() {
+
+            @Override
+            public void update(StoreClient<String, Map<String, String>> users) {
+                users.put(user.getUsername(), userMap);
+            }
+            
+        });
         
-        Versioned<Map<String, String>> versioned = users.get(user.getUsername());
-        
-        versioned.toString();
+        if (!success) {
+            throw new RuntimeException("Could not create user.");
+        }
+    }
+
+    public User getUser(String username) {
+        Map<String, String> value = users.getValue(username);
+        if (value != null) {
+            User user = new User();
+            user.setUsername(username);
+            user.setName(value.get(NAME));
+            user.setCreated(new Date(new Long(value.get(CREATED))));
+            return user;
+        }
+        return null;
     }
 
     public void setStoreClientFactory(StoreClientFactory storeClientFactory) {

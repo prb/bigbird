@@ -1,7 +1,7 @@
 <stores>
   <store>
     <name>tweets</name>
-    <persistence>cache</persistence>
+    <persistence>memory</persistence>
     <routing>client</routing>
     <replication-factor>1</replication-factor>
     <required-reads>1</required-reads>
@@ -17,7 +17,7 @@
   </store>
   <store>
     <name>users</name>
-    <persistence>cache</persistence>
+    <persistence>memory</persistence>
     <routing>client</routing>
     <replication-factor>1</replication-factor>
     <required-reads>1</required-reads>
@@ -33,7 +33,7 @@
   </store>
   <store>
     <name>friendsTimeline</name>
-    <persistence>cache</persistence>
+    <persistence>memory</persistence>
     <routing>client</routing>
     <replication-factor>1</replication-factor>
     <required-reads>1</required-reads>

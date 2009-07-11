@@ -1,0 +1,22 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:ss="http://www.springframework.org/schema/security"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="
+   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+   http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+
+  <ss:http auto-config="true">
+    <ss:intercept-url pattern="/login.html" filters='none'/>
+    <ss:intercept-url pattern="/public/**" filters='none'/>
+    <ss:intercept-url pattern="/**" access="ROLE_USER" />
+    <ss:form-login login-page='/login.html'/>
+  </ss:http>
+
+  <ss:authentication-provider user-service-ref='userDetailsService'/>
+  
+  <bean name="userDetailsService" class="bigbird.web.UserDetailsService">
+    <property name="userService" ref="voldemortUserService"/>
+  </bean>
+</beans>
