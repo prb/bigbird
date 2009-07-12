@@ -2,22 +2,43 @@
 <head>
   <title>BigBird: Login</title>
   <link type="text/css" rel="stylesheet" href="public/bigbird.css" />
+  <script type="text/javascript" src="public/jquery-1.3.1.js"></script>
+  <script type="text/javascript" src="public/bigbird.js"></script>
 </head>
 <body>
 	<div id="wrapper">
 		<div id="header">
-			<strong>big</strong>bird
+			
+			<div id="header-right">
+				<a href="/j_spring_security_logout">Sign Out</a>
+			</div>
+			<div id="header-left">
+			    <strong>big</strong>bird
+			</div>
 		</div>
 		<div id="container">
-			<div id="side-a">
-			     Tweets
+			<div id="body">
+			    
+			    <div>
+			       <div class="doing">What are you doing?</div>
+			       <textarea id="tweetBox" cols="50" rows="3">asdf</textarea>
+			       <div class="update-button"><input value="Update" type="button" onclick="tweet()"/></div>
+			    </div>
+			    
+			    <div>
+			      <div>Tweets</div>
+			      <div id="tweets">
+			      
+			      
+			      </div>
+			    </div>
 			</div>
 			
-			<div id="side-b">
+			<div id="right">
 				Follower Information
 			</div>
-			<div id="footer">
-			</div>
+		</div>
+		<div id="footer">
 		</div>
 	</div>
 </body>

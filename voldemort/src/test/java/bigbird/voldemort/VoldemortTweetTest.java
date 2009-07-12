@@ -29,6 +29,9 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         
         List<Tweet> recent = tweetService.getRecentTweets(tweet.getUser());
         assertSame(1, recent.size());
+        
+        List<Tweet> timeline = tweetService.getFriendsTimeline("admin", 0, 100);
+        assertEquals(1, timeline.size());
     }
     
     @Test
@@ -67,7 +70,7 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         
         String tweetId = tweet("admin", "Hello 6");
         
-        Thread.sleep(500);
+        Thread.sleep(1000);
         
         friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
         assertEquals(4, friendsTimeline.size());
@@ -76,7 +79,7 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         
         tweetService.startFollowing("dan", "paul");
 
-        Thread.sleep(500);
+        Thread.sleep(1000);
         
         friendsTimeline = tweetService.getFriendsTimeline("dan", 0, 100);
         assertEquals(6, friendsTimeline.size());

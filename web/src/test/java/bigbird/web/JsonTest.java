@@ -43,6 +43,13 @@ public class JsonTest extends Assert {
         GetMethod get = new GetMethod("http://localhost:8080/api/users/admin?start=0&count=20");
         result = client.executeMethod(get);
         assertEquals(200, result);
+        System.out.println(get.getResponseBodyAsString());
+        
+        get = new GetMethod("http://localhost:8080/api/friendsTimeline?start=0&count=20");
+        result = client.executeMethod(get);
+        assertEquals(200, result);
+        System.out.println(get.getResponseBodyAsString());
+        
     }
 
     private HttpClient getHttpClient() {

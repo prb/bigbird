@@ -4,24 +4,40 @@
 	margin: 0px auto;
 	padding: 0px;
 	border:0;
-	width: 600px;
-	background: url("/path/to/your/background_cols.gif") repeat;
+	width: 610px;
 }
 
 #header {
 	margin: 0 0 15px 0;
+}
+
+#header-left {	
 	font-size: 3em;
 	font-family: sans-serif
 }
 
-#side-a {
-	float: left;
-	width: 300px;
+#header-right {
+	font-size: 1em;
+	align: top;
+	float: right;
+	font-family: sans-serif;
+	font-size: 0.875em;
 }
 
-#side-b { 
+#header-right a, #header-right a:visited {
+    color: blue;
+    text-decoration: none;
+}
+
+#body {
+	float: left;
+}
+
+#right { 
 	margin: 0;
+	margin-left: 10px;
 	padding: 10px;
+	background-color: #eee;
 	
 	float: left;
 	width: 150px;
@@ -30,4 +46,29 @@
 
 #footer {
 	clear: both;
+}
+
+.doing {
+	font-weight: bold;
+	font-size: 2em;
+}
+
+.update-button {
+	text-align: right;
+}
+
+.tweet {
+    border-top: 1px solid #eee;
+    margin-top: 5px;
+}
+
+.tweet-user {
+    font-weight: bold;
+}
+
+
+.tweet-date {
+    font-size: .666em;
+    color: #999;
+    text-align: right;
 }

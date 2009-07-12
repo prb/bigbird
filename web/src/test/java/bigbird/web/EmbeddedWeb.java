@@ -26,6 +26,7 @@ public class EmbeddedWeb {
         context = new WebAppContext();
         context.setContextPath("/");
         context.setWar("./src/main/webapp");
+        context.setDefaultsDescriptor("./src/test/resources/webdefault.xml");
         
         Map<String, Boolean> params = new HashMap<String, Boolean>();
         params.put("useFileMappedBuffer", Boolean.FALSE);

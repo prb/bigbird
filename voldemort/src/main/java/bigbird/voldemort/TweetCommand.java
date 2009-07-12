@@ -45,16 +45,24 @@ public class TweetCommand extends AbstractVoldemortCommand {
         Set<String> followers = VoldemortTweetService.asSet(user.get(VoldemortTweetService.FOLLOWERS));
         
         for (String follower : followers) {
-            Versioned<List<String>> timeline = friendsTimeline.get(follower);
-            
-            if (timeline == null) {
-                timeline = new Versioned<List<String>>(new ArrayList<String>());
-            }
-            insertTweet(timeline);
-            
-            friendsTimeline.put(follower, timeline);
+            updateTimeline(friendsTimeline, follower);
         }
+        
+        // Insert the tweet into the user's timeline as well
+        updateTimeline(friendsTimeline, userId);
+        
         return null;
+    }
+
+    private void updateTimeline(StoreClient<String, List<String>> friendsTimeline, 
+                                String user) {
+        Versioned<List<String>> timeline = friendsTimeline.get(user);
+         if (timeline == null) {
+            timeline = new Versioned<List<String>>(new ArrayList<String>());
+        }
+        insertTweet(timeline);
+        
+        friendsTimeline.put(user, timeline);
     }
 
     private void insertTweet(Versioned<List<String>> timeline) {
