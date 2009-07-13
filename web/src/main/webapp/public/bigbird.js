@@ -1,10 +1,14 @@
 $(document).ready(function(){
-	refreshTweets();
+	home();
 });
 
 function home() {
 	// TODO: restore/hide tweet box
 	refreshTweets();
+	$("#following").empty();
+	$("#followers").empty();
+	updateUsers("/api/following", addFollowing);
+	updateUsers("/api/followers", addFollowers);
 }
 function refreshTweets() {
 	$("#tweets").empty();
@@ -49,9 +53,38 @@ function tweet() {
 
 function viewUser(user) {
 	$("#tweets").empty();
+	$("#following").empty();
+	$("#followers").empty();
+	
 	$.getJSON("/api/users/" + user + "?start=0&count=20",
 			  function (data) {
 			      $.each(data, addTweet);
 	          }
 	);
+	updateUsers("/api/following", addFollowing);
+	updateUsers("/api/followers", addFollowers);
 }
+
+
+function addFollowing(i,item) {
+	addUser(item, $("#following"));
+}
+
+function addFollowers(i,item) {
+	addUser(item, $("#followers"));
+}
+
+function addUser(user, element) {
+	var div = $("<div class=\"user\"/>");
+	var link = $("<a href=\"#users/" + user + "\" onclick=\"viewUser(\'" + user + "')\"/>")
+	 .text(user).appendTo(div);
+	div.appendTo(element);
+}
+
+function updateUsers(url, addFunction) {
+	$.getJSON(url, function (data) {
+			      $.each(data, addFunction);
+	          }
+	);
+}
+
