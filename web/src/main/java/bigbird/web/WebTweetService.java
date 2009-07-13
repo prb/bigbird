@@ -34,7 +34,9 @@ public class WebTweetService {
     @GET
     @Path("/users/{user}")
     @Produces("application/json")
-    public Response getTweets(@PathParam("user") String user, @QueryParam("start") int start, @QueryParam("count") int count) {
+    public Response getTweets(@PathParam("user") String user, 
+                              @QueryParam("start") int start,
+                              @QueryParam("count") int count) {
         try {
             return Response.ok().entity(toWeb(tweetService.getTweets(user, start, count))).build();
         } catch (UserNotFoundException e) {
@@ -54,6 +56,63 @@ public class WebTweetService {
         }
     }
 
+
+    @GET
+    @Produces("application/json")
+    @Path("/followers")
+    public Response getFollowers() {
+        String user = getCurrentUser();
+        try {
+            return Response.ok().entity(tweetService.getFollowers(user)).build();
+        } catch (UserNotFoundException e) {
+            return Response.status(404).entity("Invalid user " + user).build();
+        }
+    }
+
+    @GET
+    @Produces("application/json")
+    @Path("/following")
+    public Response getFollowing() {
+        String user = getCurrentUser();
+        try {
+            return Response.ok().entity(tweetService.getFollowing(user)).build();
+        } catch (UserNotFoundException e) {
+            return Response.status(404).entity("Invalid user " + user).build();
+        }
+    }
+
+    @POST
+    @Path("/startFollowing")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response startFollowing(String user) {
+        try {
+            tweetService.startFollowing(getCurrentUser(), user);
+            return Response.ok().build();
+        } catch (UserNotFoundException e) {
+            return Response.status(404).entity("Invalid user " + user).build();
+        } catch (BackendException e) {
+            log.error(e);
+            return Response.status(500).entity(e.getMessage()).build();
+        }
+    }
+
+    @POST
+    @Path("/stopFollowing")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response stopFollowing(String user) {
+        try {
+            tweetService.stopFollowing(getCurrentUser(), user);
+            return Response.ok().build();
+        } catch (UserNotFoundException e) {
+            return Response.status(404).entity("Invalid user " + user).build();
+        } catch (BackendException e) {
+            log.error(e);
+            return Response.status(500).entity(e.getMessage()).build();
+        }
+    }
+    
     @POST
     @Path("/tweet")
     @Consumes("application/json")
@@ -108,6 +167,5 @@ public class WebTweetService {
     public void setTweetService(TweetService tweetService) {
         this.tweetService = tweetService;
     }
-    
     
 }

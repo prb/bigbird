@@ -23,6 +23,34 @@
   <bean name="commandQueue" class="bigbird.voldemort.VoldemortCommandQueue" lazy-init="false" 
      init-method="initialize" destroy-method="shutdown">
     <property name="storeClientFactory" ref="storeClientFactory"/>
+    <property name="commandExecutor">
+       <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+              <property name="corePoolSize" value="1"/>
+              <property name="maxPoolSize" value="100"/>
+              <property name="queueCapacity" value="100000"/>
+              <property name="threadFactory">
+                  <!-- Customize thread names -->
+                  <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                      <property name="threadGroupName" value="pool-async-events"/>
+                      <property name="threadNamePrefix" value="async-event-thread-"/>
+                  </bean>
+              </property>
+          </bean>
+    </property>
+    <property name="indexIncrementExecutor">
+       <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+              <property name="corePoolSize" value="1"/>
+              <property name="maxPoolSize" value="1"/>
+              <property name="queueCapacity" value="100"/>
+              <property name="threadFactory">
+                  <!-- Customize thread names -->
+                  <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                      <property name="threadGroupName" value="pool-async-events"/>
+                      <property name="threadNamePrefix" value="async-event-thread-"/>
+                  </bean>
+              </property>
+          </bean>
+    </property>
   </bean>
   
   <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>

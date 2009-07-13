@@ -2,19 +2,28 @@ $(document).ready(function(){
 	refreshTweets();
 });
 
+function home() {
+	// TODO: restore/hide tweet box
+	refreshTweets();
+}
 function refreshTweets() {
 	$("#tweets").empty();
 	$.getJSON("/api/friendsTimeline?start=0&count=20",
 			  function (data) {
-			      $.each(data, function(i, item) {
-			    	               var tweetDiv = $("<div class=\"tweet\"/>");
-			                       $("<span class=\"tweet-user\"/>").text(item.user + ": ").appendTo(tweetDiv);
-			                       $("<span class=\"tweet-text\"/>").text(item.text).appendTo(tweetDiv);
-			                       $("<div class=\"tweet-date\"/>").text(item.date).appendTo(tweetDiv);
-			                       tweetDiv.appendTo("#tweets");
-			                   });
+			      $.each(data, addTweet);
 	          }
 	);
+}
+
+function addTweet(i, item) {
+    var tweetDiv = $("<div class=\"tweet\"/>");
+    var user = $("<span class=\"tweet-user\">")
+      .appendTo(tweetDiv);
+    var link = $("<a href=\"#users/" + item.user + "\" onclick=\"viewUser(\'" + item.user + "')\"/>")
+    	 .text(item.user).appendTo(user);
+    $("<span class=\"tweet-text\"/>").text(": " + item.text).appendTo(tweetDiv);
+    $("<div class=\"tweet-date\"/>").text(item.date).appendTo(tweetDiv);
+    tweetDiv.appendTo("#tweets");
 }
 
 function tweet() {
@@ -36,4 +45,13 @@ function tweet() {
 			 }
 		 });
 	 
+}
+
+function viewUser(user) {
+	$("#tweets").empty();
+	$.getJSON("/api/users/" + user + "?start=0&count=20",
+			  function (data) {
+			      $.each(data, addTweet);
+	          }
+	);
 }

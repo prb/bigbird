@@ -1,6 +1,10 @@
 package bigbird.web;
 
 
+import bigbird.TweetService;
+import bigbird.UserService;
+import bigbird.voldemort.Initializer;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +12,8 @@ import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class EmbeddedWeb {
 
@@ -44,7 +50,16 @@ public class EmbeddedWeb {
     }
     
     public static void main(String[] args) throws Exception {
-        new EmbeddedWeb().start();
+        System.out.println("Starting.");
+        EmbeddedWeb web = new EmbeddedWeb();
+        web.start();
+        
+        System.out.println("Initializing.");
+        WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(web.getContext().getServletContext());
+        Initializer i = new Initializer();
+        i.setTweetService((TweetService) ctx.getBean("voldemortTweetService"));
+        i.setUserService((UserService) ctx.getBean("voldemortUserService"));
+        i.initialize();
     }
 
     public WebAppContext getContext() {

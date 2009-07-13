@@ -23,9 +23,9 @@ public class AbstractVoldemortTest extends Assert {
 
     @Before
     public void setUp() throws Exception {
-        voldemort = new EmbeddedVoldemort();
-        voldemort.setVoldemortHome(getVoldemortHome());
-        voldemort.start();
+//        voldemort = new EmbeddedVoldemort();
+//        voldemort.setVoldemortHome(getVoldemortHome());
+//        voldemort.start();
         
         ClientConfig config = new ClientConfig();
         config.setBootstrapUrls("tcp://localhost:6666");
@@ -56,6 +56,10 @@ public class AbstractVoldemortTest extends Assert {
 
     @After
     public void tearDown() throws Exception {
+        if (queue != null) {
+            queue.shutdown();
+        }
+        
         if (voldemort != null && stop) {
             voldemort.stop();
         }
