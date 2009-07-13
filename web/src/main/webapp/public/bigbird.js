@@ -3,8 +3,10 @@ $(document).ready(function(){
 });
 
 function home() {
-	// TODO: restore/hide tweet box
+	$("#tweetHeader").show();
+	$("#userHeader").hide();
 	refreshTweets();
+	
 	$("#following").empty();
 	$("#followers").empty();
 	updateUsers("/api/following", addFollowing);
@@ -52,6 +54,9 @@ function tweet() {
 }
 
 function viewUser(user) {
+	$("#tweetHeader").hide();
+	$("#userHeader").show();
+	$("#user").text(user);
 	$("#tweets").empty();
 	$("#following").empty();
 	$("#followers").empty();

@@ -4,7 +4,7 @@
 	margin: 0px auto;
 	padding: 0px;
 	border:0;
-	width: 610px;
+	width: 620px;
 }
 
 #header {
@@ -31,6 +31,7 @@
 
 #body {
 	float: left;
+	width: 440px;
 }
 
 #right { 
@@ -42,6 +43,7 @@
 	float: left;
 	width: 150px;
 	height: 1% /* Holly hack for Peekaboo Bug */
+	
 }
 
 #footer {
@@ -49,6 +51,11 @@
 }
 
 .doing {
+	font-weight: bold;
+	font-size: 2em;
+}
+
+#user {
 	font-weight: bold;
 	font-size: 2em;
 }
