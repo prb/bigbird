@@ -16,6 +16,7 @@
   
   <modules>
     <module>api</module>
+    <module>benchmark</module>
     <module>buildsetup</module>
     <module>queue</module>
     <module>voldemort</module>

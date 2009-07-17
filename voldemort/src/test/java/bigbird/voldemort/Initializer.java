@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Initializer {
 
-    private static final int MAX_USERS = 100;
+    private static final int MAX_USERS = 1000;
     private ThreadPoolExecutor executor;
 
     private int count = 0;
@@ -56,12 +56,14 @@ public class Initializer {
                 }
             } 
         }
-        
+    }
+    
+    public void initializeTweets() throws Exception {
         System.out.println("Starting tweets");
         for (int id = 0; id < MAX_USERS; id++) {
             for (int i = 0; i < 5; i++) {
                 final String userId = "user" + id;
-                final String msg = "Tweet #" + i;
+                final String msg = "Tweet #" + i*id;
                 executor.execute(new Runnable() {
                     public void run() {
                         try {
