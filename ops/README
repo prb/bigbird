@@ -1,0 +1,23 @@
+This directory contains an Ant build script (that depends on the JSch
+tasks) that will build/configure Voldemort nodes on EC2.
+
+The work of setting up EC2 instances, IPs, etc., is expected to be
+already done; this just does the work of pushing Voldemort and
+configurations out to individual nodes.
+
+The work of building a Voldemort version that you're happy with is
+also expected to be already done; the script uploads an archive from
+this directory.
+
+You need a directory called "keys" that contains the SSH key you
+will use to access the nodes.
+
+Examples:
+
+Set up a node.
+  ant -Dnode=vn1 setup-node
+
+Stop all nodes:
+  for i in vn1 vn2; do ant -Dnode=${i} stop; done
+
+

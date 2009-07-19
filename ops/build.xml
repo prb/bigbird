@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<project name="birdbird-ops"
+	 basedir=".">
+  
+  <property  name="build" value=".build" />
+  
+  <target name="_node.properties-check">
+    <fail unless="node"
+	  message="The property node must be set." />
+    
+    
+    <available file="src/main/nodes/${node}.properties" property="found.props" />
+    
+    <fail unless="found.props"
+	  message="The property node.properties must point to a valid property file." />
+    
+    <property file="src/main/nodes/${node}.properties" />
+    
+  </target>
+  
+  <target name="clean">
+    <delete dir="${build}" />
+  </target>
+  
+  <target name="remote-clean" depends="_node.properties-check,stop">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="rm -rf /etc/init.d/voldemort /etc/rc4.d/*voldemort /opt/voldemort*" />                
+  </target>
+  
+  <target name="convert-files" depends="_node.properties-check">
+    <mkdir dir="${build}/${__hostname__}" />
+    <copy todir="${build}/${__hostname__}">
+      <fileset dir="src/main/scripts" includes="*" />
+      <fileset dir="src/main/config" includes="*" />
+    </copy>
+    <replace dir="${build}/${__hostname__}" includes="*" replaceFilterFile="src/main/nodes/${node}.properties" />
+  </target>
+  
+  <target name="upload-all" depends="upload-files,upload-archive" />
+  
+  <target name="upload-files" depends="convert-files">
+    <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
+	 toDir="root@${__hostname__}:~" verbose="yes">
+      <fileset dir="${build}/${__hostname__}" includes="*" />
+    </scp>
+  </target>
+  
+  <!--
+      There are obvious ways to make this nicer, e.g., use S3 to hold
+      the archive, only move the archive if the MD5 differs, etc.
+  -->
+  <target name="upload-archive" depends="_node.properties-check" unless="skip.archive" >
+    <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
+	 file="voldemort-${__v.version__}.tbz2"
+	 remoteToFile="root@${__hostname__}:voldemort-${__v.version__}.tbz2" verbose="yes" />
+  </target>
+  
+  <target name="setup-node" depends="upload-all,stop">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="chmod +x setup-node.sh" />
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="~/setup-node.sh" />
+  </target>
+
+  <target name="start" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="/etc/init.d/voldemort start" />
+  </target>
+  
+  <target name="restart" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="/etc/init.d/voldemort restart" />
+  </target>
+  
+  <target name="status" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="/etc/init.d/voldemort status" />
+  </target>
+  
+  <target name="stop" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="if [ -x /etc/init.d/voldemort ]; then /etc/init.d/voldemort stop; fi" />
+  </target>
+  
+  <target name="pull-logs" depends="_node.properties-check">
+    <mkdir dir="remote-logs/${__hostname__}" />
+    <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
+	 todir="remote-logs/${__hostname__}" file="root@${__hostname__}:/var/log/voldemort.log" verbose="yes" />
+  </target>
+  
+</project>
