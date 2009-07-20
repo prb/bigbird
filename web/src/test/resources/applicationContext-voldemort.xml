@@ -7,7 +7,7 @@
 
   <bean name="voldemort" class="bigbird.voldemort.EmbeddedVoldemort" 
     lazy-init="false" init-method="start" destroy-method="stop">
-    <property name="voldemortHome" value="./src/test/resources/"/>
+    <property name="voldemortHome" value="./src/test/resources/bdb"/>
   </bean>
   
 </beans>

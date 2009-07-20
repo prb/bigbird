@@ -38,9 +38,10 @@ public class AbstractVoldemortTest extends Assert {
         queue.setCommandExecutor(commandExecutor);
         queue.setIndexIncrementExecutor(new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>()));
         queue.setStoreClientFactory(factory);
-        queue.setNodeName(nodeName );
+        queue.setNodeName(nodeName);
         
         tweetService = new VoldemortTweetService();
+        tweetService.setExecutor(new ThreadPoolExecutor(1, 100, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>()));
         tweetService.setStoreClientFactory(factory);
         tweetService.setCommandQueue(queue);
         tweetService.initialize();
@@ -56,7 +57,7 @@ public class AbstractVoldemortTest extends Assert {
 
     @After
     public void tearDown() throws Exception {
-        if (queue != null) {
+        if (queue != null && stop) {
             queue.shutdown();
         }
         

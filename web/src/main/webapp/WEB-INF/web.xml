@@ -7,7 +7,6 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-            classpath:applicationContext-voldemort.xml
             classpath:applicationContext-security.xml
             classpath:applicationContext-web.xml
         </param-value>

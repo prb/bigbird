@@ -100,7 +100,8 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
     private void updateFollowing(StoreClient<String, Map<String, String>> users) {
         Versioned<Map<String, String>> versionedUser = users.get(userId);
         if (versionedUser == null) {
-            System.out.println("No user: " + userId);
+            System.out.println("Problemo - there is no user: " + userId);
+            return;
         }
         
         Map<String, String> user = versionedUser.getValue();
@@ -116,8 +117,10 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
     private void updateFollowers(StoreClient<String, Map<String, String>> users) {
         Versioned<Map<String, String>> versionedUser = users.get(toStartUser);
         if (versionedUser == null) {
-            System.out.println("No user: " + toStartUser);
+            System.out.println("Problemo - there is no user: " + toStartUser);
+            return;
         }
+        
         Map<String, String> user = versionedUser.getValue();
         Set<String> followers = VoldemortTweetService.asSet(user.get(VoldemortTweetService.FOLLOWERS));
         

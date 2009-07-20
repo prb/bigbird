@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import voldemort.client.StoreClient;
 import voldemort.client.StoreClientFactory;
@@ -35,7 +38,9 @@ public class VoldemortTweetService extends AbstractMapStore implements TweetServ
     private StoreClient<String, List<String>> friendsTimeline;
     private StoreClient<String, Map<String,String>> tweets;
     private CommandQueue commandQueue;
+    private Executor executor;
     private StoreClientFactory storeClientFactory;
+    private long asyncTimeout = 60000;
     
     public List<Tweet> getRecentTweets(String user) throws UserNotFoundException {
         return getTweets(user, 0, 20);
@@ -73,23 +78,36 @@ public class VoldemortTweetService extends AbstractMapStore implements TweetServ
         if (versioned == null) {
             versioned = new Versioned(new ArrayList<String>());
         }
-        List<String> timeline = versioned.getValue();
+        final List<String> timeline = versioned.getValue();
+        final List<Tweet> tweetList = new ArrayList<Tweet>();
         
-        List<Tweet> tweetList = new ArrayList<Tweet>();
+        // Retrieve timeline asynchronously
+        int tweetsToRetrieve = Math.min(count, timeline.size());
+        final CountDownLatch latch = new CountDownLatch(tweetsToRetrieve);
+        for (int i = start; i < tweetsToRetrieve; i++) {
+            final int timelineIndex = i;
+            Runnable retriever = new Runnable() {
+
+                public void run() {
+                    String idAndTime = timeline.get(timelineIndex);
+                    String[] split = idAndTime.split(":");
+                    
+                    String id = split[0];
+                    Map<String, String> tweetMap = tweets.getValue(id);
+                    if (tweetMap != null) {
+                        tweetList.add(toTweet(tweetMap, id));
+                    } else {
+                        System.out.println("Tweet missing " + id);
+                    }
+                    latch.countDown();
+                }
+            };
+            executor.execute(retriever);
+        }
         
-        // TODO: do asynchronously 
-        
-        for (int i = start; i < count && i < timeline.size(); i++) {
-            String idAndTime = timeline.get(i);
-            String[] split = idAndTime.split(":");
-            
-            String id = split[0];
-            Map<String, String> tweetMap = tweets.getValue(id);
-            if (tweetMap != null) {
-                tweetList.add(toTweet(tweetMap, id));
-            } else {
-                System.out.println("Tweet missing " + id);
-            }
+        try {
+            latch.await(asyncTimeout , TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
         }
         
         return tweetList;
@@ -230,6 +248,22 @@ public class VoldemortTweetService extends AbstractMapStore implements TweetServ
 
     public void setStoreClientFactory(StoreClientFactory storeClientFactory) {
         this.storeClientFactory = storeClientFactory;
+    }
+
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
+    }
+
+    public void setAsyncTimeout(long asyncTimeout) {
+        this.asyncTimeout = asyncTimeout;
+    }
+
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    public long getAsyncTimeout() {
+        return asyncTimeout;
     }
 
 }

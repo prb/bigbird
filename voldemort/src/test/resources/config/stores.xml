@@ -49,7 +49,7 @@
   </store>
   <store>
     <name>commandQueues</name>
-    <persistence>cache</persistence>
+    <persistence>memory</persistence>
     <routing>client</routing>
     <replication-factor>1</replication-factor>
     <required-reads>1</required-reads>

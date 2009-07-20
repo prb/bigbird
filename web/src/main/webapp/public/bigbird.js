@@ -2,6 +2,8 @@ $(document).ready(function(){
 	home();
 });
 
+var tweetIndex = 0;
+
 function home() {
 	$("#tweetHeader").show();
 	$("#userHeader").hide();
@@ -14,9 +16,15 @@ function home() {
 }
 function refreshTweets() {
 	$("#tweets").empty();
-	$.getJSON("/api/friendsTimeline?start=0&count=20",
+	tweetIndex = 0;
+	getMoreTweets();
+}
+
+function getMoreTweets() {
+	$.getJSON("/api/friendsTimeline?start=" + tweetIndex + "&count=20",
 			  function (data) {
 			      $.each(data, addTweet);
+			      tweetIndex += data.length;
 	          }
 	);
 }
