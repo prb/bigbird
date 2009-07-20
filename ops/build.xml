@@ -95,7 +95,14 @@
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
 	     command="if [ -x /etc/init.d/voldemort ]; then /etc/init.d/voldemort stop; fi" />
   </target>
-  
+
+  <target name="purge-data" depends="_node.properties-check,stop">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="rm -rf /opt/voldemort-home/data" />
+  </target>
+
   <target name="pull-logs" depends="_node.properties-check">
     <mkdir dir="remote-logs/${__hostname__}" />
     <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
