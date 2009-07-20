@@ -17,7 +17,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import junit.framework.Assert;
 
-public class JsonTest extends Assert {
+public class WebTest extends Assert {
     private EmbeddedWeb jetty;
 
     @Before
@@ -46,6 +46,23 @@ public class JsonTest extends Assert {
         System.out.println(get.getResponseBodyAsString());
         
         get = new GetMethod("http://localhost:8080/api/friendsTimeline?start=0&count=20");
+        result = client.executeMethod(get);
+        assertEquals(200, result);
+        System.out.println(get.getResponseBodyAsString());
+        
+    }
+    
+    @Test
+    public void testStats() throws Exception {
+        HttpClient client = getHttpClient();
+
+        // init the webapp
+        GetMethod get = new GetMethod("http://localhost:8080/api/friendsTimeline?start=0&count=20");
+        int result = client.executeMethod(get);
+        assertEquals(200, result);
+        
+        // check stats
+        get = new GetMethod("http://localhost:8080/stats");
         result = client.executeMethod(get);
         assertEquals(200, result);
         System.out.println(get.getResponseBodyAsString());

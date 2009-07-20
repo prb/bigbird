@@ -21,7 +21,7 @@ public class BigBirdBenchmarker {
         HttpBenchmark benchmark = new HttpBenchmark();
         
         benchmark.setThreads(threads);
-        benchmark.setRequests(5);
+        benchmark.setRequests(10);
         
         benchmark.setUrl(new URL("http://localhost:8080"));
         benchmark.setRequestGenerators(rg);

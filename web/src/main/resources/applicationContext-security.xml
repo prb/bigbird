@@ -11,6 +11,7 @@
     <ss:intercept-url pattern="/login.html" filters='none'/>
     <ss:intercept-url pattern="/register.html" filters='none'/>
     <ss:intercept-url pattern="/public/**" filters='none'/>
+    <ss:intercept-url pattern="/stats" filters='none'/>
     <ss:intercept-url pattern="/**" access="ROLE_USER" />
     
     <ss:form-login login-page='/login.html' default-target-url="/index.html"/>
@@ -19,6 +20,6 @@
   <ss:authentication-provider user-service-ref='userDetailsService'/>
   
   <bean name="userDetailsService" class="bigbird.web.UserDetailsService">
-    <property name="userService" ref="voldemortUserService"/>
+    <property name="userService" ref="userService"/>
   </bean>
 </beans>

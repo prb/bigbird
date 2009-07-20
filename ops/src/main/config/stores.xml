@@ -3,8 +3,10 @@
     <name>tweets</name>
     <persistence>bdb</persistence>
     <routing>client</routing>
-    <replication-factor>1</replication-factor>
+    <replication-factor>2</replication-factor>
+    <preferred-reads>2</preferred-reads>
     <required-reads>1</required-reads>
+    <preferred-writes>2</preferred-writes>
     <required-writes>1</required-writes>
     <key-serializer>
       <type>json</type>
@@ -19,8 +21,10 @@
     <name>users</name>
     <persistence>bdb</persistence>
     <routing>client</routing>
-    <replication-factor>1</replication-factor>
+    <replication-factor>2</replication-factor>
+    <preferred-reads>2</preferred-reads>
     <required-reads>1</required-reads>
+    <preferred-writes>2</preferred-writes>
     <required-writes>1</required-writes>
     <key-serializer>
       <type>json</type>
@@ -35,8 +39,10 @@
     <name>friendsTimeline</name>
     <persistence>bdb</persistence>
     <routing>client</routing>
-    <replication-factor>1</replication-factor>
+    <replication-factor>2</replication-factor>
+    <preferred-reads>2</preferred-reads>
     <required-reads>1</required-reads>
+    <preferred-writes>2</preferred-writes>
     <required-writes>1</required-writes>
     <key-serializer>
       <type>json</type>
@@ -51,8 +57,10 @@
     <name>commandQueues</name>
     <persistence>bdb</persistence>
     <routing>client</routing>
-    <replication-factor>1</replication-factor>
+    <replication-factor>2</replication-factor>
+    <preferred-reads>2</preferred-reads>
     <required-reads>1</required-reads>
+    <preferred-writes>2</preferred-writes>
     <required-writes>1</required-writes>
     <key-serializer>
       <type>string</type>

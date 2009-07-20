@@ -10,68 +10,66 @@
       <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
   </bean>
 
-
   <bean name="webTweetService" class="bigbird.web.WebTweetService">
-    <property name="tweetService" ref="voldemortTweetService"/>
+    <property name="tweetService" ref="tweetService"/>
   </bean>
   
-  <bean name="voldemortUserService" class="bigbird.voldemort.VoldemortUserService" 
+  <bean name="userService" class="bigbird.voldemort.VoldemortUserService" 
         init-method="initialize" lazy-init="false">
     <property name="storeClientFactory" ref="storeClientFactory"/>
   </bean>
   
-  <bean name="voldemortTweetService" class="bigbird.voldemort.VoldemortTweetService" lazy-init="false" 
-     init-method="initialize" depends-on="voldemortUserService">
+  <bean name="tweetService" class="bigbird.voldemort.VoldemortTweetService" lazy-init="false" 
+     init-method="initialize" depends-on="userService">
     <property name="storeClientFactory" ref="storeClientFactory"/>
     <property name="commandQueue" ref="commandQueue"/>
-    <property name="executor">
-       <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-            <property name="corePoolSize" value="1"/>
-            <property name="maxPoolSize" value="20"/>
-            <property name="queueCapacity" value="1000000"/>
-            <property name="threadFactory">
-                <!-- Customize thread names -->
-                <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
-                    <property name="threadGroupName" value="pool-tweet-executor"/>
-                    <property name="threadNamePrefix" value="tweet-executor-thread-"/>
-                </bean>
-            </property>
-          </bean>
-    </property>
+    <property name="executor" ref="tweetServiceExecutor"/>
   </bean>
   
+  <bean name="tweetServiceExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <property name="corePoolSize" value="1"/>
+    <property name="maxPoolSize" value="20"/>
+    <property name="queueCapacity" value="1000000"/>
+    <property name="threadFactory">
+        <!-- Customize thread names -->
+        <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+            <property name="threadGroupName" value="pool-tweet-executor"/>
+            <property name="threadNamePrefix" value="tweet-executor-thread-"/>
+        </bean>
+    </property>
+  </bean>
+        
   <bean name="commandQueue" class="bigbird.voldemort.VoldemortCommandQueue" lazy-init="false" 
      init-method="initialize" destroy-method="shutdown">
     <property name="storeClientFactory" ref="storeClientFactory"/>
-    <property name="commandExecutor">
-       <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-              <property name="corePoolSize" value="1"/>
-              <property name="maxPoolSize" value="50"/>
-              <property name="queueCapacity" value="1000000"/>
-              <property name="threadFactory">
-                  <!-- Customize thread names -->
-                  <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
-                      <property name="threadGroupName" value="pool-async-command-queue"/>
-                      <property name="threadNamePrefix" value="command-queue-thread-"/>
-                  </bean>
-              </property>
+    <property name="commandExecutor" ref="commandExecutor"/>
+    <property name="indexIncrementExecutor" ref="indexIncrementExecutor"/>
+  </bean>
+  
+  <bean name="indexIncrementExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+      <property name="corePoolSize" value="1"/>
+      <property name="maxPoolSize" value="1"/>
+      <property name="queueCapacity" value="100"/>
+      <property name="threadFactory">
+          <!-- Customize thread names -->
+          <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+              <property name="threadGroupName" value="pool-index-increment"/>
+              <property name="threadNamePrefix" value="index-increment-thread-"/>
           </bean>
-    </property>
-    
-    <property name="indexIncrementExecutor">
-       <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-              <property name="corePoolSize" value="1"/>
-              <property name="maxPoolSize" value="1"/>
-              <property name="queueCapacity" value="100"/>
-              <property name="threadFactory">
-                  <!-- Customize thread names -->
-                  <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
-                      <property name="threadGroupName" value="pool-index-incrementer"/>
-                      <property name="threadNamePrefix" value="index-incrementer-thread-"/>
-                  </bean>
-              </property>
+      </property>
+  </bean>
+  
+  <bean name="commandExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+      <property name="corePoolSize" value="1"/>
+      <property name="maxPoolSize" value="50"/>
+      <property name="queueCapacity" value="1000000"/>
+      <property name="threadFactory">
+          <!-- Customize thread names -->
+          <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+              <property name="threadGroupName" value="pool-async-command-queue"/>
+              <property name="threadNamePrefix" value="command-queue-thread-"/>
           </bean>
-    </property>
+      </property>
   </bean>
   
   <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
