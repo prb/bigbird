@@ -11,8 +11,8 @@ function home() {
 	
 	$("#following").empty();
 	$("#followers").empty();
-	updateUsers("/api/following", addFollowing);
-	updateUsers("/api/followers", addFollowers);
+	updateUsers("./api/following", addFollowing);
+	updateUsers("./api/followers", addFollowers);
 }
 function refreshTweets() {
 	$("#tweets").empty();
@@ -21,7 +21,7 @@ function refreshTweets() {
 }
 
 function getMoreTweets() {
-	$.getJSON("/api/friendsTimeline?start=" + tweetIndex + "&count=20",
+	$.getJSON("./api/friendsTimeline?start=" + tweetIndex + "&count=20",
 			  function (data) {
 			      $.each(data, addTweet);
 			      tweetIndex += data.length;
@@ -46,7 +46,7 @@ function tweet() {
 	
 	 $.ajax({
 		   type: "POST",
-		   url: "/api/tweet",
+		   url: "./api/tweet",
 		   contentType: "application/json",
 		   data: "{ \"tweet\" : \"" + tweetBox.value + "\" }",
 		   success: function(msg){
@@ -69,13 +69,13 @@ function viewUser(user) {
 	$("#following").empty();
 	$("#followers").empty();
 	
-	$.getJSON("/api/users/" + user + "?start=0&count=20",
+	$.getJSON("./api/users/" + user + "?start=0&count=20",
 			  function (data) {
 			      $.each(data, addTweet);
 	          }
 	);
-	updateUsers("/api/following", addFollowing);
-	updateUsers("/api/followers", addFollowers);
+	updateUsers("./api/following", addFollowing);
+	updateUsers("./api/followers", addFollowers);
 }
 
 
