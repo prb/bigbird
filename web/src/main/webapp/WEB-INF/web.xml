@@ -7,6 +7,7 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
+            classpath*:applicationContext-voldemort.xml
             classpath:applicationContext-security.xml
             classpath:applicationContext-web.xml
         </param-value>
@@ -36,9 +37,19 @@
       com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
   </servlet>
   
+  <servlet>
+    <servlet-name>StatsServlet</servlet-name>
+    <servlet-class>bigbird.web.StatsServlet</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
       <servlet-name>JerseySpringServlet</servlet-name>
       <url-pattern>/api/*</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+      <servlet-name>StatsServlet</servlet-name>
+      <url-pattern>/stats</url-pattern>
   </servlet-mapping>
   
   <welcome-file-list>

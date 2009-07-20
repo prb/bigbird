@@ -17,8 +17,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+/**
+ * Initializes BigBird with some default data.
+ */
 public class Initializer {
 
     private int maxUsers = 10000;
@@ -30,16 +34,36 @@ public class Initializer {
     private int popularCutoff;
     private int engagedCutoff;
     private CommandQueue commandQueue;
+    private int highlyEngagedCutoff;
+    
+    /**
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "classpath:applicationContext-web.xml" });
+        
+        Initializer i = new Initializer();
+        i.setTweetService((TweetService) ctx.getBean("tweetService"));
+        i.setUserService((UserService) ctx.getBean("userService"));
+        i.setCommandQueue((CommandQueue) ctx.getBean("commandQueue"));
+        i.initializeUsers();
+        i.initializeTweets();
+    }
     
     public void initializeUsers() throws Exception {
-        User first = userService.getUser("user1");
+        User first = userService.getUser("user" + maxUsers);
         if (first != null) return;
         
-        for (int i = 0; i < maxUsers; i++) {
+        for (int i = maxUsers-1; i >= 0; i--) {
             User user = new User();
             user.setUsername("user" + i);
             user.setName("User " + i);
             userService.newUser(user, "user" + i);
+            
+            if ((maxUsers - i) % 100 == 0) {
+                System.out.println("Created " + (maxUsers-i) + "/" + maxUsers + " new users.");
+            }
         }
         
         System.out.println("Created " + maxUsers + " users");
@@ -54,10 +78,12 @@ public class Initializer {
          */
         
         double percentPopular = 0.0010;
+        double percentHighlyEngaged = 0.1;
         double percentEngaged = 0.7;
         
         popularCutoff = (int) (percentPopular*(double)maxUsers);
-        engagedCutoff = (int) ((percentPopular + percentEngaged)*(double)maxUsers);
+        highlyEngagedCutoff = (int) (percentHighlyEngaged*(double)maxUsers);
+        engagedCutoff = (int) (percentEngaged*(double)maxUsers);
         
         System.out.println("Initializing Followers. Popular cutoff: " + popularCutoff + ", Engaged cuttoff: " + engagedCutoff);
         int commandCounter = 0;
@@ -77,9 +103,17 @@ public class Initializer {
                 tweetService.startFollowing(id, "user" + j);
                 commandCounter++;
             }
+
+            if (user > popularCutoff && user < highlyEngagedCutoff) {
+                // Follow the next hundred users if they're highly engaged
+                for (int j = 0; j < 100 && j < maxUsers; j++) {
+                    tweetService.startFollowing(id, "user" + (j + popularCutoff));
+                    commandCounter++;
+                }
+            }
             
-            if (user > popularCutoff && user < engagedCutoff) {
-                // Follow the next hundred users if they're engaged
+            if (user > highlyEngagedCutoff && user < engagedCutoff) {
+                // Follow the next 10 users if they're engaged
                 for (int j = 0; j < 10 && j < maxUsers; j++) {
                     tweetService.startFollowing(id, "user" + (j + popularCutoff));
                     commandCounter++;
@@ -87,7 +121,7 @@ public class Initializer {
             }
             
             if (user % 100 == 0) {
-                System.out.println("Issued " + commandCounter + " follow commands (" + user + "/" + maxUsers + ")");
+                System.out.println("Issued " + commandCounter + " follow commands (User " + user + "/" + maxUsers + ")");
             }
         }
         System.out.println("Issued " + commandCounter + " follow commands");
