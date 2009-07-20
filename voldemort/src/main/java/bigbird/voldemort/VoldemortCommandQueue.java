@@ -56,7 +56,7 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
     public void shutdown() {
         String maximumKey = nodeName + ":maximum";
         String minimumKey = nodeName + ":minimum";
-        System.out.println("Shutting down " + maximum + " - " + minimum);
+        System.out.println("Shutting down. Max ID: " + maximum + " Min ID: " + minimum);
         client.put(maximumKey, new Long(maximum).toString());
         client.put(minimumKey, new Long(minimum).toString());
     }

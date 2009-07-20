@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +31,7 @@ public class TweetCommand extends AbstractVoldemortCommand {
     }   
 
     public Object execute(VoldemortTweetService service,
-                          StoreClient<String,List<String>> friendsTimeline, 
+                          final StoreClient<String,List<String>> friendsTimeline, 
                           StoreClient<String,Map<String,String>> users,
                           StoreClient<String,Map<String, String>> tweets) {
         // Now actually insert the tweet
@@ -42,14 +44,28 @@ public class TweetCommand extends AbstractVoldemortCommand {
             return null;
         }
         
-        Set<String> followers = VoldemortTweetService.asSet(user.get(VoldemortTweetService.FOLLOWERS));
+        final Set<String> followers = VoldemortTweetService.asSet(user.get(VoldemortTweetService.FOLLOWERS));
+        final CountDownLatch latch = new CountDownLatch(followers.size());
         
-        for (String follower : followers) {
-            updateTimeline(friendsTimeline, follower);
+        int i = 0;
+        for (final String follower : followers) {
+            Runnable timelineUpdater = new Runnable() {
+                public void run() {
+                    updateTimeline(friendsTimeline, follower);
+                    latch.countDown();
+                }
+            };
+            service.getExecutor().execute(timelineUpdater);
+            i++;
         }
         
         // Insert the tweet into the user's timeline as well
         updateTimeline(friendsTimeline, userId);
+        
+        try {
+            latch.await(service.getAsyncTimeout(), TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+        }
         
         return null;
     }

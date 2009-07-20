@@ -3,7 +3,7 @@ package bigbird.web;
 
 import bigbird.TweetService;
 import bigbird.UserService;
-import bigbird.voldemort.Initializer;
+import bigbird.queue.CommandQueue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +59,9 @@ public class EmbeddedWeb {
         Initializer i = new Initializer();
         i.setTweetService((TweetService) ctx.getBean("voldemortTweetService"));
         i.setUserService((UserService) ctx.getBean("voldemortUserService"));
-        i.initialize();
+        i.setCommandQueue((CommandQueue) ctx.getBean("commandQueue"));
+//        i.initializeUsers();
+//        i.initializeTweets();
     }
 
     public WebAppContext getContext() {

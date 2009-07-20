@@ -10,7 +10,7 @@
   <artifactId>bigbird-web</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>Web Interface</name>
-
+  <packaging>war</packaging>
   <dependencies>
     <dependency>
       <groupId>bigbird</groupId>

@@ -154,4 +154,8 @@ public abstract class AbstractCommandQueue implements CommandQueue {
         this.indexIncrementExecutor = indexIncrementExecutor;
     }
     
+    public Executor getCommandExecutor() {
+        return commandExecutor;
+    }
+    
 }

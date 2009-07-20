@@ -1,5 +1,6 @@
-package bigbird.voldemort;
+package bigbird.web;
 
+import bigbird.voldemort.AbstractVoldemortTest;
 import org.junit.Test;
 
 public class MultiuserSmokeTest extends AbstractVoldemortTest {
@@ -11,7 +12,15 @@ public class MultiuserSmokeTest extends AbstractVoldemortTest {
         Initializer init = new Initializer();
         init.setUserService(userService);
         init.setTweetService(tweetService);
-        init.initialize();
+        init.setCommandQueue(queue);
+        init.setMaxUsers(1000);
+        init.initializeUsers();
+        init.initializeTweets();
+    }
+
+    @Override
+    protected String getVoldemortHome() {
+        return "../voldemort/" + super.getVoldemortHome();
     }
 
 }
