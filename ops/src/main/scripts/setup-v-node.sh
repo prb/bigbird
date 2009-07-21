@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Go get V
+if [ ! -e voldemort-__v.version__.tbz2 ]
+then
+  wget -q http://bigbird-stage.s3.amazonaws.com/voldemort-__v.version__.tbz2
+fi
+
 # Put V configuration files in place
 mkdir -p /opt/voldemort-home/config
 for i in cluster.xml server.properties stores.xml

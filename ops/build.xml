@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <project name="birdbird-ops"
-	 basedir=".">
+	 basedir="."
+     xmlns:artifact="urn:maven-artifact-ant">
+
+    <path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.0.9.jar" />
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+             uri="urn:maven-artifact-ant"
+             classpathref="maven-ant-tasks.classpath" />
   
   <property  name="build" value=".build" />
   
@@ -22,7 +28,7 @@
     <delete dir="${build}" />
   </target>
   
-  <target name="remote-clean" depends="_node.properties-check,stop">
+  <target name="remote-clean-v" depends="_node.properties-check,stop-v">
     <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
@@ -38,7 +44,7 @@
     <replace dir="${build}/${__hostname__}" includes="*" replaceFilterFile="src/main/nodes/${node}.properties" />
   </target>
   
-  <target name="upload-all" depends="upload-files,upload-archive" />
+  <target name="upload-v-all" depends="upload-files,upload-v-archive" />
   
   <target name="upload-files" depends="convert-files">
     <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
@@ -51,59 +57,117 @@
       There are obvious ways to make this nicer, e.g., use S3 to hold
       the archive, only move the archive if the MD5 differs, etc.
   -->
-  <target name="upload-archive" depends="_node.properties-check" unless="skip.archive" >
+  <target name="upload-v-archive" depends="_node.properties-check" unless="skip.archive" >
     <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
 	 file="voldemort-${__v.version__}.tbz2"
 	 remoteToFile="root@${__hostname__}:voldemort-${__v.version__}.tbz2" verbose="yes" />
   </target>
   
-  <target name="setup-node" depends="upload-all,stop">
-    <sshexec host="${__hostname__}"
+  <target name="setup-v-node" depends="upload-v-all,stop-v">
+      <sshexec host="${__hostname__}"
+               username="root"
+               keyfile="keys/${__key__}" passphrase="" trust="yes"
+               command="rm -fr ~/bigbird" />
+      <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
 	     command="chmod +x setup-node.sh" />
     <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
-	     command="~/setup-node.sh" />
+	     command="~/setup-v-node.sh" />
   </target>
 
-  <target name="start" depends="_node.properties-check">
+  <target name="upload-war" depends="_node.properties-check">
+      <artifact:dependencies filesetId="webapp">
+          <localRepository location="/Users/prb/.m2/repository" />
+          <dependency groupId="bigbird"
+                      artifactId="bigbird-web"
+                      version="0.1-SNAPSHOT"
+                      type="war" />
+      </artifact:dependencies>
+      <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
+           toDir="root@${__hostname__}:~" verbose="yes">
+          <fileset refId="webapp" />
+      </scp>  
+  </target>
+  <target name="setup-t-node" depends="upload-files,upload-war,stop-t">
+
+      <sshexec host="${__hostname__}"
+               username="root"
+               keyfile="keys/${__key__}" passphrase="" trust="yes"
+               command="chmod +x setup-t-node.sh" />
+
+      <sshexec host="${__hostname__}"
+               username="root"
+               keyfile="keys/${__key__}" passphrase="" trust="yes"
+               command="~/setup-t-node.sh" />
+  </target>
+
+  <target name="start-v" depends="_node.properties-check">
     <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
 	     command="/etc/init.d/voldemort start" />
   </target>
   
-  <target name="restart" depends="_node.properties-check">
+  <target name="restart-v" depends="_node.properties-check">
     <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
 	     command="/etc/init.d/voldemort restart" />
   </target>
   
-  <target name="status" depends="_node.properties-check">
+  <target name="status-v" depends="_node.properties-check">
     <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
 	     command="/etc/init.d/voldemort status" />
   </target>
   
-  <target name="stop" depends="_node.properties-check">
+  <target name="stop-v" depends="_node.properties-check">
     <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
 	     command="if [ -x /etc/init.d/voldemort ]; then /etc/init.d/voldemort stop; fi" />
   </target>
 
-  <target name="purge-data" depends="_node.properties-check,stop">
+  <target name="purge-v-data" depends="_node.properties-check,stop-v">
     <sshexec host="${__hostname__}"
 	     username="root"
 	     keyfile="keys/${__key__}" passphrase="" trust="yes"
 	     command="rm -rf /opt/voldemort-home/data" />
   </target>
 
-  <target name="pull-logs" depends="_node.properties-check">
+  <target name="start-t" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="/etc/init.d/tomcat start" />
+  </target>
+
+  <target name="restart-t" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="/etc/init.d/tomcat restart" />
+  </target>
+
+  <target name="status-t" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="/etc/init.d/tomcat status" />
+  </target>
+
+  <target name="stop-t" depends="_node.properties-check">
+    <sshexec host="${__hostname__}"
+	     username="root"
+	     keyfile="keys/${__key__}" passphrase="" trust="yes"
+	     command="if [ -x /etc/init.d/tomcat ]; then /etc/init.d/tomcat stop; fi" />
+  </target>
+
+  <target name="pull-v-logs" depends="_node.properties-check">
     <mkdir dir="remote-logs/${__hostname__}" />
     <scp keyfile="keys/${__key__}" passphrase="" trust="yes"
 	 todir="remote-logs/${__hostname__}" file="root@${__hostname__}:/var/log/voldemort.log" verbose="yes" />
