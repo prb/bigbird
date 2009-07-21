@@ -48,6 +48,8 @@ public class EmbeddedWeb {
         System.setProperty("voldemortHome", "./src/test/resources/bdb");
         EmbeddedWeb web = new EmbeddedWeb();
         web.start();
+        
+//        Initializer.main(new String[0]);
     }
 
     public WebAppContext getContext() {

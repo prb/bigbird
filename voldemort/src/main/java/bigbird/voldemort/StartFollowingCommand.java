@@ -89,7 +89,7 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
             }
             
             // TODO: handle failure
-            friendsTimeline.put(userId, versionedTimeline);
+            friendsTimeline.putIfNotObsolete(userId, versionedTimeline);
         } catch (UserNotFoundException e) {
             // I guess the user deleted their account... Stupid users.
         }
@@ -111,7 +111,7 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
         user.put(VoldemortTweetService.FOLLOWING, VoldemortTweetService.toString(followers));
         
         // Update the follower information
-        users.put(userId, versionedUser);
+        users.putIfNotObsolete(userId, versionedUser);
     }
 
     private void updateFollowers(StoreClient<String, Map<String, String>> users) {
@@ -128,7 +128,7 @@ public class StartFollowingCommand extends AbstractVoldemortCommand {
         user.put(VoldemortTweetService.FOLLOWERS, VoldemortTweetService.toString(followers));
         
         // Update the follower information
-        users.put(toStartUser, versionedUser);
+        users.putIfNotObsolete(toStartUser, versionedUser);
     }
     
     private void addToTimeline(List<String> timeline, int timelineIdx, String timelineId) {

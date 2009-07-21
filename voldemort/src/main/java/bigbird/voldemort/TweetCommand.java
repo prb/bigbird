@@ -22,7 +22,7 @@ public class TweetCommand extends AbstractVoldemortCommand {
     
     private String userId;
     private final Map<String, String> tweetMap;
-    transient String tweetId;
+    private String tweetId;
 
     public TweetCommand(String userId, String tweetId, Map<String, String> tweetMap) {
         this.userId = userId;
