@@ -9,6 +9,7 @@
 
   <ss:http auto-config="true">
     <ss:intercept-url pattern="/login.html" filters='none'/>
+    <ss:intercept-url pattern="/favicon.ico" filters='none' />
     <ss:intercept-url pattern="/register.html" filters='none'/>
     <ss:intercept-url pattern="/api/register" filters='none'/>
     <ss:intercept-url pattern="/public/**" filters='none'/>
