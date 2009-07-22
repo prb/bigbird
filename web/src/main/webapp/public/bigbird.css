@@ -79,3 +79,16 @@
     color: #999;
     text-align: right;
 }
+
+#error {
+  color: red; 
+  font-weight:bold;
+}
+
+#userHeader {
+  margin-bottom: 10px;
+}
+
+#followContainer {
+  float: right;
+}

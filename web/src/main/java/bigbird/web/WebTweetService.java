@@ -65,8 +65,10 @@ public class WebTweetService {
     @GET
     @Produces("application/json")
     @Path("/followers")
-    public Response getFollowers() {
-        String user = getCurrentUser();
+    public Response getFollowers(@QueryParam("user") String user) {
+        if (StringUtils.isEmpty(user)) {
+            user = getCurrentUser();
+        }
         try {
             return Response.ok().entity(tweetService.getFollowers(user)).build();
         } catch (UserNotFoundException e) {
@@ -77,8 +79,10 @@ public class WebTweetService {
     @GET
     @Produces("application/json")
     @Path("/following")
-    public Response getFollowing() {
-        String user = getCurrentUser();
+    public Response getFollowing(@QueryParam("user") String user) {
+        if (StringUtils.isEmpty(user)) {
+            user = getCurrentUser();
+        }
         try {
             return Response.ok().entity(tweetService.getFollowing(user)).build();
         } catch (UserNotFoundException e) {
@@ -90,12 +94,12 @@ public class WebTweetService {
     @Path("/startFollowing")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response startFollowing(String user) {
+    public Response startFollowing(FollowRequest req) {
         try {
-            tweetService.startFollowing(getCurrentUser(), user);
+            tweetService.startFollowing(getCurrentUser(), req.getUser());
             return Response.ok().build();
         } catch (UserNotFoundException e) {
-            return Response.status(404).entity("Invalid user " + user).build();
+            return Response.status(404).entity("Invalid user " + req.getUser()).build();
         } catch (BackendException e) {
             log.error(e);
             return Response.status(500).entity(e.getMessage()).build();
@@ -106,12 +110,12 @@ public class WebTweetService {
     @Path("/stopFollowing")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response stopFollowing(String user) {
+    public Response stopFollowing(FollowRequest req) {
         try {
-            tweetService.stopFollowing(getCurrentUser(), user);
+            tweetService.stopFollowing(getCurrentUser(), req.getUser());
             return Response.ok().build();
         } catch (UserNotFoundException e) {
-            return Response.status(404).entity("Invalid user " + user).build();
+            return Response.status(404).entity("Invalid user " + req.getUser()).build();
         } catch (BackendException e) {
             log.error(e);
             return Response.status(500).entity(e.getMessage()).build();

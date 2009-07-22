@@ -11,6 +11,7 @@ import java.util.Map;
 import voldemort.client.StoreClient;
 import voldemort.client.StoreClientFactory;
 import voldemort.client.UpdateAction;
+import voldemort.versioning.Versioned;
 
 public class VoldemortUserService implements UserService {
 
@@ -46,7 +47,7 @@ public class VoldemortUserService implements UserService {
 
             @Override
             public void update(StoreClient<String, Map<String, String>> users) {
-                users.put(user.getUsername(), userMap);
+                users.put(user.getUsername(), new Versioned(userMap));
             }
             
         });

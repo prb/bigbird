@@ -2,8 +2,8 @@ $(document).ready(function(){
 	home();
 });
 
-
 function home() {
+    showMessage("");
 	$("#register").hide();
 	$("#login").show();
 }
@@ -11,6 +11,7 @@ function home() {
 function showRegistration() {
 	$("#login").hide();
 	$("#register").show();
+    showMessage("");
 }
 
 function register() {
@@ -25,14 +26,17 @@ function register() {
 		   contentType: "application/json",
 		   data: JSON.stringify(user),
 		   success: function(msg) {
+		 	   alert(msg);
 		       home();
 		       showMessage("Registered! Please log in... ");
 		   },
-		   error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   // typically only one of textStatus or errorThrown 
-			   // will have info
-			   showMessage(errorThrown);
-			 }
+		   error: function (xhr, textStatus, errorThrown) {
+			   if (xhr.status == 409) {
+				   showMessage("That user already exists. Please choose another username.");
+			   } else {
+				   showMessage(xhr.responseText);
+			   }
+		   }
 		 });
 }
 

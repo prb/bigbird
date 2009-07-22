@@ -1,19 +1,29 @@
 $(document).ready(function(){
 	home();
+	$("#find_user").mousedown(clearFindUser);
+	$("#find_user").keyup(findUser);
 });
 
 var tweetIndex = 0;
+var clearUser = true;
+var followers;
+var following;
+var currentUser;
 
 function home() {
 	$("#tweetHeader").show();
 	$("#userHeader").hide();
+	$("#find_user").val("Find user...");
+	clearError();
+	
 	refreshTweets();
 	
 	$("#following").empty();
 	$("#followers").empty();
-	updateUsers("./api/following", addFollowing);
-	updateUsers("./api/followers", addFollowers);
+	updateUsers("./api/following", addFollowing, true, true);
+	updateUsers("./api/followers", addFollowers, true, false);
 }
+
 function refreshTweets() {
 	$("#tweets").empty();
 	tweetIndex = 0;
@@ -41,16 +51,14 @@ function addTweet(i, item) {
 }
 
 function tweet() {
-	var tweet = new Object();
-	tweet.tweet = tweetBox.value;
-	
 	 $.ajax({
 		   type: "POST",
 		   url: "./api/tweet",
 		   contentType: "application/json",
-		   data: "{ \"tweet\" : \"" + tweetBox.value + "\" }",
+		   data: "{ \"tweet\" : \"" + $("#tweetBox").val() + "\" }",
 		   success: function(msg){
 		     refreshTweets();
+		     $("#tweetBox").val("");
 		   },
 		   error: function (XMLHttpRequest, textStatus, errorThrown) {
 			   // typically only one of textStatus or errorThrown 
@@ -62,22 +70,55 @@ function tweet() {
 }
 
 function viewUser(user) {
-	$("#tweetHeader").hide();
-	$("#userHeader").show();
-	$("#user").text(user);
-	$("#tweets").empty();
-	$("#following").empty();
-	$("#followers").empty();
+	var viewUserHandler = function (data) {
+		currentUser = user;
+		$("#tweetHeader").hide();
+		$("#userHeader").show();
+		$("#user").text(user);
+		$("#tweets").empty();
+		$("#following").empty();
+		$("#followers").empty();
+		$("#find_user").val("Find user...");
+		
+		if (contains(following,user)) {
+			$("#follow").text("Unfollow");
+		} else {
+			$("#follow").text("Follow");
+		}
+		
+		clearUser = true;
+	    $.each(data, addTweet);
+		updateUsers("./api/following?user=" + user, addFollowing);
+		updateUsers("./api/followers?user=" + user, addFollowers);
+    }
 	
-	$.getJSON("./api/users/" + user + "?start=0&count=20",
-			  function (data) {
-			      $.each(data, addTweet);
-	          }
-	);
-	updateUsers("./api/following", addFollowing);
-	updateUsers("./api/followers", addFollowers);
+	var errorHandler = function(data) {
+		showError("Could not find user " + user + "!");
+	}
+
+	 $.ajax({
+		   type: "GET",
+		   url: "./api/users/" + user + "?start=0&count=20",
+		   success: viewUserHandler,
+		   error: errorHandler,
+		   dataType: "json"
+		 });
 }
 
+
+function showMessage(text) {
+	$("#message").text(text);
+}
+
+function clearError() {
+	$("#error").hide();
+	$("#error").text("");
+}
+
+function showError(text) {
+	$("#error").show();
+	$("#error").text(text);
+}
 
 function addFollowing(i,item) {
 	addUser(item, $("#following"));
@@ -94,10 +135,58 @@ function addUser(user, element) {
 	div.appendTo(element);
 }
 
-function updateUsers(url, addFunction) {
+function updateUsers(url, addFunction, isLoggedInUser, isFollowingResult) {
 	$.getJSON(url, function (data) {
-			      $.each(data, addFunction);
-	          }
+		               // store the data so we can reuse it
+		               if (isLoggedInUser) {
+			               if (isFollowingResult) {
+			            	   following = data;
+			               } else {
+			            	   followers = data;
+			               }
+		               }
+				       $.each(data, addFunction);
+		           }
 	);
 }
 
+function clearFindUser() {
+	if (clearUser) {
+	  $("#find_user").val("");
+	  clearUser = false;
+	}
+}
+
+function findUser(e) {
+	if (e.keyCode == 13) {
+		viewUser($("#find_user").val())
+	}
+}
+
+// Follow or unfollow the current user depending on the current state.
+function followOrUnfollow() {
+	if (contains(following,user)) {
+	} else {
+	}
+	
+	$.ajax({
+		   type: "POST",
+		   url: "./api/startFollowing",
+		   contentType: "application/json",
+		   data: "{ \"user\" : \"" + currentUser + "\" }",
+		   success: function(msg){
+		     refreshTweets();
+		   },
+		   error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   // typically only one of textStatus or errorThrown 
+			   // will have info
+			   alert(textStatus + " " + errorThrown);
+			 }
+    });
+}
+function contains(arr,obj) {
+	for (var i = 0; i < arr.length; i++) {
+		if (obj == arr[i]) return true;
+	}
+	return false;
+}

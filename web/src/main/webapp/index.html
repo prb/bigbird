@@ -10,6 +10,7 @@
 		<div id="header">
 			
 			<div id="header-right">
+				<input id="find_user" type="text" value="Find user...." onmousedown="clearFindUser()"/>
 				<a href="#home" onclick="home()">Home</a>
 				<a href="./j_spring_security_logout">Sign Out</a>
 			</div>
@@ -19,22 +20,26 @@
 		</div>
 		<div id="container">
 			<div id="body">
-			    
+			    <div id="error"></div>
 			    <div id="tweetHeader">
 			       <div class="doing">What are you doing?</div>
-			       <textarea id="tweetBox" cols="50" rows="3">asdf</textarea>
+			       <textarea id="tweetBox" cols="50" rows="3"></textarea>
 			       <div class="update-button"><input value="Update" type="button" onclick="tweet()"/></div>
 			    </div>
 			    
 			    <div id="userHeader">
-			       <div id="user"></div>
+			       <div>
+			         <span id="user"></span>
+			         <div id="followContainer">
+			         <input id="follow" type="button" value="Follow" onclick="followOrUnfollow()"/>
+			         </div>
+			       </div>
 			    </div>
 			    
-			    
 			    <div>
-			      <div>Tweets</div>
+			      <div>Tweets:</div>
 			      <div id="tweets">
-			      
+			        
 			      </div>
 			    </div>
 			</div>

@@ -25,7 +25,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 public class Initializer {
 
-    private int maxUsers = 100;
+    private int maxUsers = 10000;
     private ThreadPoolExecutor executor;
     private int count = 0;
     

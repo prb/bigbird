@@ -44,7 +44,7 @@ public class EmbeddedWeb {
     }
     
     public static void main(String[] args) throws Exception {
-        System.out.println("Starting. " + System.getProperty("bootstrapUrls"));
+        System.out.println("Starting embedded web server.");
         System.setProperty("voldemortHome", "./src/test/resources/bdb");
         EmbeddedWeb web = new EmbeddedWeb();
         web.start();
