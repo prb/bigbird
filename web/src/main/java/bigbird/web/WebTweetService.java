@@ -1,9 +1,12 @@
 package bigbird.web;
 
+import bigbird.AlreadyExistsException;
 import bigbird.BackendException;
 import bigbird.Tweet;
 import bigbird.TweetService;
+import bigbird.User;
 import bigbird.UserNotFoundException;
+import bigbird.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.Authentication;
@@ -30,6 +34,7 @@ import org.springframework.security.context.SecurityContextHolder;
 public class WebTweetService {
     protected final Log log = LogFactory.getLog(getClass());
     private TweetService tweetService;
+    private UserService userService;
     
     @GET
     @Path("/users/{user}")
@@ -114,6 +119,40 @@ public class WebTweetService {
     }
     
     @POST
+    @Path("/register")
+    @Consumes("application/json")
+    @Produces("application/json")
+    public Response register(WebUser req) {
+        if (req == null) {
+            Response.status(400).entity("request cannot be empty.");
+        }
+        
+        if (StringUtils.isEmpty(req.getUsername())) {
+            Response.status(400).entity("Username cannot be empty.");
+        }
+        
+        if (StringUtils.isEmpty(req.getPassword())) {
+            Response.status(400).entity("Password cannot be empty.");
+        }
+        
+        if (StringUtils.isEmpty(req.getName())) {
+            Response.status(400).entity("Name cannot be empty.");
+        }
+        
+        User user = new User();
+        user.setUsername(req.getUsername());
+        user.setPassword(req.getPassword());
+        user.setName(req.getName());
+        
+        try {
+            userService.newUser(user);
+            return Response.ok().build();
+        } catch (AlreadyExistsException e) {
+            return Response.status(409).build();
+        }
+    }
+    
+    @POST
     @Path("/tweet")
     @Consumes("application/json")
     @Produces("application/json")
@@ -166,6 +205,10 @@ public class WebTweetService {
     
     public void setTweetService(TweetService tweetService) {
         this.tweetService = tweetService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
     
 }

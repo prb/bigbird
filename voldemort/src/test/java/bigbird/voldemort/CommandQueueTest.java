@@ -4,12 +4,18 @@ import bigbird.queue.CannotStoreCommandException;
 import bigbird.queue.Command;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -84,11 +90,63 @@ public class CommandQueueTest extends AbstractVoldemortTest {
     public void testCommandsNeverGetExecuted() throws Exception {
         Command command = new CounterCommand();
 
-        queue.setCommandExecutor(new Executor() {
+        queue.setCommandExecutor(new ExecutorService() {
+
+            public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+                return false;
+            }
+
+            public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks, long timeout, TimeUnit unit)
+                throws InterruptedException {
+                return null;
+            }
+
+            public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks) throws InterruptedException {
+                return null;
+            }
+
+            public <T> T invokeAny(Collection<Callable<T>> tasks, long timeout, TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException {
+                return null;
+            }
+
+            public <T> T invokeAny(Collection<Callable<T>> tasks) throws InterruptedException,
+                ExecutionException {
+                return null;
+            }
+
+            public boolean isShutdown() {
+                return false;
+            }
+
+            public boolean isTerminated() {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            public void shutdown() {
+                
+            }
+
+            public List<Runnable> shutdownNow() {
+                return null;
+            }
+
+            public <T> Future<T> submit(Callable<T> task) {
+                return null;
+            }
+
+            public <T> Future<T> submit(Runnable task, T result) {
+                return null;
+            }
+
+            public Future<?> submit(Runnable task) {
+                return null;
+            }
 
             public void execute(Runnable command) {
-                // don't do anything to simulate failure
             }
+
             
         });
         

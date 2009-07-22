@@ -132,4 +132,8 @@ public class HttpBenchmark {
         return params;
     }
 
+    public void setVerbosity(int verbosity) {
+        this.verbosity = verbosity;
+    }
+
 }

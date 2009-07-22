@@ -5,6 +5,7 @@ import java.util.Date;
 public class User {
     private String name;
     private String username;
+    private String password;
     private Date created;
     
     public String getName() {
@@ -25,4 +26,11 @@ public class User {
     public void setCreated(Date created) {
         this.created = created;
     }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
 }

@@ -1,5 +1,6 @@
 package bigbird.voldemort;
 
+import bigbird.AlreadyExistsException;
 import bigbird.BackendException;
 import bigbird.Tweet;
 import bigbird.User;
@@ -13,6 +14,18 @@ import org.junit.Test;
 
 public class VoldemortTweetTest extends AbstractVoldemortTest {
 
+    @Test
+    public void testUserService() throws Exception {
+        User user = new User();
+        user.setUsername("admin");
+        user.setName("Administrator");
+        
+        try {
+            userService.newUser(user);
+        } catch (AlreadyExistsException e) {
+        }
+    }
+    
     @Test
     public void testBasicTweet() throws Exception {
         Tweet tweet = new Tweet();
@@ -39,12 +52,12 @@ public class VoldemortTweetTest extends AbstractVoldemortTest {
         User user = new User();
         user.setUsername("dan");
         user.setName("Dan Diephouse");
-        userService.newUser(user, "dan");
+        userService.newUser(user);
         
         user = new User();
         user.setUsername("paul");
         user.setName("Paul R. Brown");
-        userService.newUser(user, "paul");
+        userService.newUser(user);
         
         tweet("admin", "Hello World");
 

@@ -1,7 +1,7 @@
 package bigbird;
 
 public interface UserService {
-    void newUser(User user, String password);
+    void newUser(User user) throws AlreadyExistsException;
 
     User getUser(String username);
 }

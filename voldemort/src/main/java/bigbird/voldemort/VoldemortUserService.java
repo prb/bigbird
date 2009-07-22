@@ -1,5 +1,6 @@
 package bigbird.voldemort;
 
+import bigbird.AlreadyExistsException;
 import bigbird.User;
 import bigbird.UserService;
 
@@ -26,16 +27,17 @@ public class VoldemortUserService implements UserService {
         if (userMap == null) {
             User user = new User();
             user.setUsername("admin");
+            user.setPassword("admin");
             user.setName("Administrator");
             user.setCreated(new Date());
-            newUser(user, "admin");
+            newUser(user);
         }
     }
     
-    public void newUser(final User user, String password) {
+    public void newUser(final User user) throws AlreadyExistsException {
         final Map<String,String> userMap = new HashMap<String, String>();
         userMap.put(USERNAME, user.getUsername());
-        userMap.put(PASSWORD, password);
+        userMap.put(PASSWORD, user.getPassword());
         userMap.put(NAME, user.getName());
         userMap.put(CREATED, new Long(new Date().getTime()).toString());
         userMap.put(LAST_TWEET, "0");
@@ -50,7 +52,7 @@ public class VoldemortUserService implements UserService {
         });
         
         if (!success) {
-            throw new RuntimeException("Could not create user.");
+            throw new AlreadyExistsException();
         }
     }
 
@@ -60,6 +62,7 @@ public class VoldemortUserService implements UserService {
             User user = new User();
             user.setUsername(username);
             user.setName(value.get(NAME));
+            user.setPassword(value.get(PASSWORD));
             user.setCreated(new Date(new Long(value.get(CREATED))));
             return user;
         }

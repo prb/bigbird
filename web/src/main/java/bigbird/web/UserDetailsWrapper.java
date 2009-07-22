@@ -20,7 +20,7 @@ public class UserDetailsWrapper implements UserDetails {
     }
 
     public String getPassword() {
-        return "password";
+        return user.getPassword();
     }
 
     public String getUsername() {

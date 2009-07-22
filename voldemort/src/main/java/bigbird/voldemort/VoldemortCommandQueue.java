@@ -38,14 +38,14 @@ public class VoldemortCommandQueue extends AbstractCommandQueue {
                     if (value == null) {
                         continue;
                     }
-                    
+                    System.out.println(value);
                     try {
                         ObjectInputStream objectStream = new ObjectInputStream(new ByteArrayInputStream(value.getBytes()));
                         addCommand((Command)objectStream.readObject(), l);
                     } catch (IOException e) {
-                        log.error(e);
+                        log.error("Error reading command from queue", e);
                     } catch (ClassNotFoundException e) {
-                        log.error(e);
+                        log.error("Error reading command from queue", e);
                     }
                 }
             }

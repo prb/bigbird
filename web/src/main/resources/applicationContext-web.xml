@@ -12,6 +12,7 @@
 
   <bean name="webTweetService" class="bigbird.web.WebTweetService">
     <property name="tweetService" ref="tweetService"/>
+    <property name="userService" ref="userService"/>
   </bean>
   
   <bean name="userService" class="bigbird.voldemort.VoldemortUserService" 
@@ -77,6 +78,12 @@
   <bean name="storeClientFactory" class="voldemort.client.SocketStoreClientFactory" scope="singleton">
     <constructor-arg>
       <bean class="voldemort.client.ClientConfig">
+        <constructor-arg>
+          <props>
+            <prop key="connection_timeout_ms">5000</prop>
+            <prop key="max_queued_requests">5000</prop>
+          </props>
+        </constructor-arg>
         <property name="bootstrapUrls" value="${bootstrapUrls}"/>
       </bean>
     </constructor-arg>

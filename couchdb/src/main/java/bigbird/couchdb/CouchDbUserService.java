@@ -31,7 +31,7 @@ public class CouchDbUserService implements UserService {
         }
     }
     
-    public void newUser(User user, String password) {
+    public void newUser(User user) {
         // TODO Auto-generated method stub
     }
 

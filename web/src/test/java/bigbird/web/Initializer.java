@@ -25,7 +25,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 public class Initializer {
 
-    private int maxUsers = 10000;
+    private int maxUsers = 100;
     private ThreadPoolExecutor executor;
     private int count = 0;
     
@@ -41,6 +41,7 @@ public class Initializer {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        System.out.println("Initializer. Rawr.");
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "classpath:applicationContext-web.xml" });
         
         Initializer i = new Initializer();
@@ -59,7 +60,7 @@ public class Initializer {
             User user = new User();
             user.setUsername("user" + i);
             user.setName("User " + i);
-            userService.newUser(user, "user" + i);
+            userService.newUser(user);
             
             if ((maxUsers - i) % 100 == 0) {
                 System.out.println("Created " + (maxUsers-i) + "/" + maxUsers + " new users.");
@@ -89,8 +90,8 @@ public class Initializer {
         int commandCounter = 0;
         for (int user = 0; user < maxUsers; user++) {
             String id = "user" + user;
-            
-            // Handle popular users.
+            System.out.println("Initializing " + id);
+            // Popular users will follow 50 random people
             if (user < popularCutoff) {
                 for (int j = 0; j < 50; j++) {
                     int follow = new Random().nextInt(maxUsers);
@@ -99,21 +100,22 @@ public class Initializer {
                 }
             }
             
+            // And every user will follow the popular users
             for (int j = 0; j < popularCutoff; j++) {
-                tweetService.startFollowing(id, "user" + j);
+                tweetService.startFollowing(id, "user" + popularCutoff);
                 commandCounter++;
             }
 
+            // Highly engaged users will follow the next 100 users
             if (user > popularCutoff && user < highlyEngagedCutoff) {
-                // Follow the next hundred users if they're highly engaged
                 for (int j = 0; j < 100 && j < maxUsers; j++) {
                     tweetService.startFollowing(id, "user" + (j + popularCutoff));
                     commandCounter++;
                 }
             }
             
+            // Regular users will follow 10 people
             if (user > highlyEngagedCutoff && user < engagedCutoff) {
-                // Follow the next 10 users if they're engaged
                 for (int j = 0; j < 10 && j < maxUsers; j++) {
                     tweetService.startFollowing(id, "user" + (j + popularCutoff));
                     commandCounter++;
@@ -123,6 +125,8 @@ public class Initializer {
             if (user % 100 == 0) {
                 System.out.println("Issued " + commandCounter + " follow commands (User " + user + "/" + maxUsers + ")");
             }
+
+            waitForAllCommands();
         }
         System.out.println("Issued " + commandCounter + " follow commands");
         waitForAllCommands();

@@ -2,6 +2,8 @@
 <head>
   <title>BigBird: Login</title>
   <link type="text/css" rel="stylesheet" href="public/login.css" />
+  <script type="text/javascript" src="public/jquery-1.3.1.js"></script>
+  <script type="text/javascript" src="public/login.js"></script>
 </head>
 <body>
 	<div id="wrapper">
@@ -11,18 +13,33 @@
 		<div id="container">
 			<div id="side-a">
 				<img alt="" src="public/bigbird-large.jpg">
-			  Isn't flying wonderful? It makes me feel like a bird.
+			    Isn't flying wonderful? It makes me feel like a bird.
 			</div>
 			
 			<div id="side-b">
-				<div>
-				  <strong>Please sign in</strong>
+		        <div id="message"></div>
+			    <div id="login">
+					<div>
+					  <span><strong>Please sign in:</strong> 
+					  (<a href="#register" onclick="showRegistration()">register</a>)</span>
+					</div>
+					<form action="./j_spring_security_check" method="post">
+						<div>username: <input name="j_username" size="30" value="admin"/></div>
+						<div>password: <input name="j_password" type="password" size="30" value="password"/></div>
+	                    <input type="submit" value="Login" />
+					</form>
 				</div>
-				<form action="./j_spring_security_check" method="post">
-					<div>username: <input name="j_username" size="30" value="admin"/></div>
-					<div>password: <input name="j_password" type="password" size="30" value="password"/></div>
-                    <input type="submit" value="Login" />
-				</form>
+				
+			    <div id="register">
+					<div>
+					  <strong>Sign up for BigBird:</strong>
+					</div>
+					<div>name: <input id="register_name" name="name" size="30" value=""/></div>
+					<div>username: <input id="register_username" name="username" size="30" value=""/></div>
+					<div>password: <input  id="register_password" name="password" type="password" size="30" value=""/></div>
+                    <input type="button" value="Cancel" onclick="home()"/>
+                    <input type="button" value="Register" onclick="register()"/>
+				</div>
 			</div>
 			<div id="footer">
 			</div>

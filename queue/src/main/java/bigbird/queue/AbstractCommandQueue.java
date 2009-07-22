@@ -77,9 +77,9 @@ public abstract class AbstractCommandQueue implements CommandQueue {
                 command.execute(commandContext);
                 finishCommand(commandId);
                 
-                if (log.isInfoEnabled()) {
-                    log.info("Executed " + command.toString() + " in " + (System.currentTimeMillis() - start) + " ms");
-                }
+//                if (log.isInfoEnabled()) {
+                    System.out.println("Executed " + command.toString() + " in " + (System.currentTimeMillis() - start) + " ms");
+//                }
             }
         });
     }
