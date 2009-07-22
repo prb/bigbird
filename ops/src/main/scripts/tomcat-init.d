@@ -2,6 +2,8 @@
 
 export CATALINA_HOME=/opt/apache-tomcat-6.0.20
 export BASEDIR=/opt/apache-tomcat-6.0.20
+export JAVA_OPTS='-Xm1000m'
+
 start() {
 	$CATALINA_HOME/bin/catalina.sh start
 }
