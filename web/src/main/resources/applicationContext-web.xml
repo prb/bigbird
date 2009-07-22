@@ -45,6 +45,7 @@
     <property name="storeClientFactory" ref="storeClientFactory"/>
     <property name="commandExecutor" ref="commandExecutor"/>
     <property name="indexIncrementExecutor" ref="indexIncrementExecutor"/>
+    <property name="nodeName" value="${nodeName}"/>
   </bean>
   
   <bean name="indexIncrementExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">

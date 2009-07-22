@@ -28,7 +28,7 @@ public class VoldemortUserService implements UserService {
         if (userMap == null) {
             User user = new User();
             user.setUsername("admin");
-            user.setPassword("admin");
+            user.setPassword("password");
             user.setName("Administrator");
             user.setCreated(new Date());
             newUser(user);
