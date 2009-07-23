@@ -47,7 +47,7 @@ public class VoldemortUserService implements UserService {
 
             @Override
             public void update(StoreClient<String, Map<String, String>> users) {
-                users.put(user.getUsername(), new Versioned(userMap));
+                users.putIfNotObsolete(user.getUsername(), new Versioned(userMap));
             }
             
         });

@@ -2,17 +2,14 @@ package bigbird.web;
 
 import bigbird.Tweet;
 
-import java.text.SimpleDateFormat;
-
 public class WebTweet {
-    private static SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy KK:MM aa");
     private String href;
     private String text;
     private String date;
     private String user;
     
     public WebTweet(Tweet t) {
-        this.date = format.format(t.getDate());
+        this.date = t.getDate().toString();
         this.href = "/api/" + t.getUser() + "/" + t.getId();
         this.text = t.getText();
         this.user = t.getUser();

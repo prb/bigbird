@@ -49,7 +49,7 @@ public class EmbeddedWeb {
         EmbeddedWeb web = new EmbeddedWeb();
         web.start();
         
-        Initializer.main(new String[0]);
+//        Initializer.main(new String[0]);
     }
 
     public WebAppContext getContext() {

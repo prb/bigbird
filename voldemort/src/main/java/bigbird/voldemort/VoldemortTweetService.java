@@ -10,6 +10,8 @@ import bigbird.queue.CannotStoreCommandException;
 import bigbird.queue.CommandQueue;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -109,6 +111,12 @@ public class VoldemortTweetService extends AbstractMapStore implements TweetServ
             latch.await(asyncTimeout , TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
         }
+
+        Collections.sort(tweetList, new Comparator<Tweet>() {
+            public int compare(Tweet o1, Tweet o2) {
+                return -o1.getDate().compareTo(o2.getDate());
+            }
+        });
         
         return tweetList;
     }
