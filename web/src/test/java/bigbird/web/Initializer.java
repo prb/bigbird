@@ -25,7 +25,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 public class Initializer {
 
-    private int maxUsers = 10000;
+    private int maxUsers = 1000;
     private ThreadPoolExecutor executor;
     private int count = 0;
     
@@ -60,6 +60,7 @@ public class Initializer {
             User user = new User();
             user.setUsername("user" + i);
             user.setName("User " + i);
+            user.setPassword("password");
             userService.newUser(user);
             
             if ((maxUsers - i) % 100 == 0) {
@@ -125,8 +126,6 @@ public class Initializer {
             if (user % 100 == 0) {
                 System.out.println("Issued " + commandCounter + " follow commands (User " + user + "/" + maxUsers + ")");
             }
-
-            waitForAllCommands();
         }
         System.out.println("Issued " + commandCounter + " follow commands");
         waitForAllCommands();

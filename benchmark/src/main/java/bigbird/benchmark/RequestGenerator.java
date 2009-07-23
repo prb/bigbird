@@ -9,26 +9,33 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.DefaultedHttpParams;
 import org.apache.http.params.HttpParams;
 
-public class RequestGenerator {
+public abstract class RequestGenerator {
     
     private DefaultedHttpParams params;
     private ByteArrayEntity entity;
-    private final String authorization;
     private final String url;
+    private final String method;
     
-    public RequestGenerator(String contentType, byte[] data, String url, String username, String password) {
+    public RequestGenerator(String method,
+                            String contentType, byte[] data, String url) {
         super();
+        this.method = method;
         this.url = url;
-        this.authorization = "Basic " + new String(Base64.encodeBase64((username + ":" + password).getBytes()));
-        entity = new ByteArrayEntity(data);
-        entity.setContentType(contentType);
+        
+        if (contentType != null) {
+            entity = new ByteArrayEntity(data);
+            entity.setContentType(contentType);
+        }
     }
 
     public HttpRequest generateRequest(int count) {
         BasicHttpEntityEnclosingRequest httppost = 
-            new BasicHttpEntityEnclosingRequest("POST", url);
-        httppost.setEntity(entity);
+            new BasicHttpEntityEnclosingRequest(method, url);
+        if (entity != null) {
+            httppost.setEntity(entity);
+        }
         httppost.setParams(params);
+        String authorization = "Basic " + new String(Base64.encodeBase64((getUser() + ":password").getBytes()));
         httppost.setHeader(new BasicHeader("Authorization", 
                                            authorization));
         
@@ -38,4 +45,6 @@ public class RequestGenerator {
     public void setParameters(HttpParams defaultParms) {
         this.params = new DefaultedHttpParams(new BasicHttpParams(), defaultParms);
     }
+    
+    public abstract String getUser();
 }

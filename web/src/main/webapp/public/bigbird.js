@@ -6,8 +6,8 @@ $(document).ready(function(){
 
 var tweetIndex = 0;
 var clearUser = true;
-var followers;
-var following;
+var followerIds;
+var followingIds;
 var currentUser;
 
 function home() {
@@ -80,10 +80,10 @@ function viewUser(user) {
 		$("#followers").empty();
 		$("#find_user").val("Find user...");
 		
-		if (contains(following,user)) {
-			$("#follow").text("Unfollow");
+		if (contains(followingIds,currentUser)) {
+			$("#follow").val("Unfollow");
 		} else {
-			$("#follow").text("Follow");
+			$("#follow").val("Follow");
 		}
 		
 		clearUser = true;
@@ -140,9 +140,9 @@ function updateUsers(url, addFunction, isLoggedInUser, isFollowingResult) {
 		               // store the data so we can reuse it
 		               if (isLoggedInUser) {
 			               if (isFollowingResult) {
-			            	   following = data;
+			            	   followingIds = data;
 			               } else {
-			            	   followers = data;
+			            	   followerIds = data;
 			               }
 		               }
 				       $.each(data, addFunction);
@@ -155,6 +155,7 @@ function clearFindUser() {
 	  $("#find_user").val("");
 	  clearUser = false;
 	}
+	return true;
 }
 
 function findUser(e) {
@@ -165,24 +166,43 @@ function findUser(e) {
 
 // Follow or unfollow the current user depending on the current state.
 function followOrUnfollow() {
-	if (contains(following,user)) {
+    $("#follow").val("updating...");
+	if (contains(followingIds,currentUser)) {
+		$.ajax({
+			   type: "POST",
+			   url: "./api/stopFollowing",
+			   contentType: "application/json",
+			   data: "{ \"user\" : \"" + currentUser + "\" }",
+			   success: function(msg){
+                 $("#follow").val("Follow");
+                 followingIds.splice(followingIds.indexOf(currentUser), 1);
+			   },
+			   error: function (XMLHttpRequest, textStatus, errorThrown) {
+	               $("#follow").val("Unfollow");
+				   // typically only one of textStatus or errorThrown 
+				   // will have info
+				   alert(textStatus + " " + errorThrown);
+				 }
+	    });
 	} else {
+		// start following
+		$.ajax({
+			   type: "POST",
+			   url: "./api/startFollowing",
+			   contentType: "application/json",
+			   data: "{ \"user\" : \"" + currentUser + "\" }",
+			   success: function(msg){
+                 $("#follow").val("Unfollow");
+                 followingIds.concat(currentUser);
+			   },
+			   error: function (XMLHttpRequest, textStatus, errorThrown) {
+				   // typically only one of textStatus or errorThrown 
+				   // will have info
+                   $("#follow").val("Follow");
+				   alert(textStatus + " " + errorThrown);
+			   }
+	    });
 	}
-	
-	$.ajax({
-		   type: "POST",
-		   url: "./api/startFollowing",
-		   contentType: "application/json",
-		   data: "{ \"user\" : \"" + currentUser + "\" }",
-		   success: function(msg){
-		     refreshTweets();
-		   },
-		   error: function (XMLHttpRequest, textStatus, errorThrown) {
-			   // typically only one of textStatus or errorThrown 
-			   // will have info
-			   alert(textStatus + " " + errorThrown);
-			 }
-    });
 }
 function contains(arr,obj) {
 	for (var i = 0; i < arr.length; i++) {
