@@ -59,7 +59,7 @@ public class HttpBenchmark {
     protected int socketTimeout = 60000;
     protected boolean useHttp1_0 = false;
     protected RequestGenerator[] requestGenerators;
-    
+
     public void setRequests(int requests) {
         this.requests = requests;
     }
@@ -82,29 +82,29 @@ public class HttpBenchmark {
         for (RequestGenerator g : requestGenerators) {
             g.setParameters(params);
         }
-        
+
         host = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
 
         ThreadPoolExecutor workerPool = new ThreadPoolExecutor(
             threads, threads, 5, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(),
             new ThreadFactory() {
-                
+
                 public Thread newThread(Runnable r) {
                     return new Thread(r, "ClientPool");
                 }
-                
+
             });
         workerPool.prestartAllCoreThreads();
 
         BenchmarkWorker[] workers = new BenchmarkWorker[threads];
         for (int i = 0; i < threads; i++) {
             workers[i] = new BenchmarkWorker(
-                    params, 
-                    verbosity, 
-                    requestGenerators[i], 
-                    host, 
-                    requests, 
+                    params,
+                    verbosity,
+                    requestGenerators[i],
+                    host,
+                    requests,
                     keepAlive);
             workerPool.execute(workers[i]);
         }

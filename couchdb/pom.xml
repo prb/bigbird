@@ -9,14 +9,14 @@
   <artifactId>bigbird-couchdb</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>CouchDB Backend</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>bigbird</groupId>
       <artifactId>bigbird-api</artifactId>
       <version>${version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.google.code.jcouchdb</groupId>
       <artifactId>jcouchdb</artifactId>

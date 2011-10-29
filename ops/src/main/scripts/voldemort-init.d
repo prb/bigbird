@@ -4,7 +4,7 @@ start() {
 	pids=`ps xwww | grep voldemort.server.VoldemortServe[r] | awk '{print $1}'`
 
 	if [ "$pids" != "" ]
-	then	
+	then
         	echo $(hostname)': Voldemort is already running under '${pids}'...'
 	else
                /opt/voldemort/bin/voldemort-server.sh /opt/voldemort-home >> /var/log/voldemort.log 2>&1 &
@@ -29,17 +29,17 @@ status() {
 	else
 		echo $(hostname)': Voldemort is not running.'
 	fi
-	
+
 }
 
-case $1 in 
+case $1 in
 
      'status')
         status
 	;;
 
      'start')
-	start       	
+	start
 	;;
 
      'stop')

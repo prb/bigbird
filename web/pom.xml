@@ -11,7 +11,7 @@
   <version>0.1-SNAPSHOT</version>
   <name>Web Interface</name>
   <packaging>war</packaging>
-  
+
   <dependencies>
     <dependency>
       <groupId>bigbird</groupId>
@@ -29,13 +29,13 @@
       <version>${version}</version>
       <type>test-jar</type>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
       <version>2.0.4</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
@@ -80,7 +80,7 @@
       <version>1.1.0</version>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -107,7 +107,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <repositories>
     <repository>
       <id>java.net</id>

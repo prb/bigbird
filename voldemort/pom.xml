@@ -9,7 +9,7 @@
   <artifactId>bigbird-voldemort</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>Voldemort!</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>bigbird</groupId>
@@ -109,7 +109,7 @@
       <version>1.2.14</version>
     </dependency>
   </dependencies>
-  
+
    <build>
        <plugins>
            <plugin>
@@ -125,5 +125,5 @@
            </plugin>
        </plugins>
    </build>
-  
+
 </project>
