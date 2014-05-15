@@ -131,7 +131,7 @@ public class BenchmarkWorker implements Runnable {
 
             try {
                 HttpRequest req = requestGenerator.generateRequest(count);
-                
+
                 if (!conn.isOpen()) {
                     Socket socket = null;
                     if ("https".equals(targetHost.getSchemeName())) {
